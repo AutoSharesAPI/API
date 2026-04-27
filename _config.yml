@@ -1,0 +1,6 @@
+title: AutoShares API
+description: API documentation for AutoShares trading platform
+theme: jekyll-theme-minimal
+markdown: kramdown
+exclude:
+  - .gitbook
