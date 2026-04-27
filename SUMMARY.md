@@ -8,10 +8,9 @@
 
 * [Quick Start Guide](web-api/introduction.md)
 * [API Overview](web-api/trading-api/overview.md)
-* Authentication
+* [Authentication](web-api/trading-api/authentication/requesting-tokens)
 
 * [Onboarding Users](web-api/trading-api/managing-users/README.md)  
-   * [Account Application]((coming soon)
    * [Account Setup](web-api/trading-api/managing-users/get-users-info/README.md)
       * [Syntax](web-api/trading-api/managing-users/get-users-info/users\_getuserinfo.md)
       * [Add Account To User](web-api/trading-api/user-accounts/list-users-accounts-6.md)
