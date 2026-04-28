@@ -363,6 +363,93 @@ In this case, if the limit order to purchase the Apple stock gets executed, the 
 In One-Cancels-the-Other orders, both legs cannot be market orders.
 {% endhint %}
 
+### One-Triggers-One-Cancels-the-Other (OTOCO) Order Type
+
+One-Triggers-One-Cancels-the-Other (OTOCO) is a conditional order that combines an OTO with an OCO. The initial order (first leg) acts as the trigger. Once the trigger order fills, the remaining two legs become active as an OCO pair — if one of them executes, the other is automatically cancelled.
+
+This is commonly used for bracket orders: buy a stock, then simultaneously set a take-profit limit and a stop-loss to protect the position.
+
+```javascript
+{
+    "Type": "OneTriggerOneCancelOther", //the type of the order
+    "Symbol": "", //this parameter must be empty
+    "Legs": [
+        {
+            "Symbol": "AAPL", //Leg 1: the trigger order (entry)
+            "Type": "Limit",
+            "Side": "Buy",
+            "Price": 180,
+            "Quantity": 100
+        },
+        {
+            "Symbol": "AAPL", //Leg 2: take-profit (OCO-A)
+            "Type": "Limit",
+            "Side": "Sell",
+            "Price": 190,
+            "Quantity": 100
+        },
+        {
+            "Symbol": "AAPL", //Leg 3: stop-loss (OCO-B)
+            "Type": "Stop",
+            "Side": "Sell",
+            "StopPrice": 170,
+            "Quantity": 100
+        }
+    ]
+}
+```
+
+In this example:
+
+1. **Leg 1 (Trigger):** A limit order to buy 100 shares of AAPL at $180. This is the entry order.
+2. **Leg 2 (Take-Profit):** Once Leg 1 fills, a limit sell at $190 becomes active — this is the profit target.
+3. **Leg 3 (Stop-Loss):** Simultaneously, a stop sell at $170 becomes active — this protects against downside.
+
+If the price rises to $190 and Leg 2 fills, Leg 3 (the stop-loss) is automatically cancelled. Conversely, if the price drops to $170 and Leg 3 triggers, Leg 2 (the take-profit) is cancelled.
+
+{% hint style="warning" %}
+In OTOCO orders, the first leg (trigger) cannot be a market order. The trigger must be a limit, stop, or stop-limit order.
+{% endhint %}
+
+{% hint style="info" %}
+OTOCO orders require exactly three legs. The first leg is the trigger, and legs 2 and 3 form the OCO pair. All three legs should reference the same symbol and the same quantity.
+{% endhint %}
+
+#### OTOCO Bracket Order with Stop-Limit Protection
+
+For tighter risk control, you can use a stop-limit instead of a plain stop for the protective leg:
+
+```javascript
+{
+    "Type": "OneTriggerOneCancelOther",
+    "Symbol": "",
+    "Legs": [
+        {
+            "Symbol": "MSFT",
+            "Type": "Limit",
+            "Side": "Buy",
+            "Price": 415,
+            "Quantity": 50
+        },
+        {
+            "Symbol": "MSFT",
+            "Type": "Limit",
+            "Side": "Sell",
+            "Price": 440,
+            "Quantity": 50
+        },
+        {
+            "Symbol": "MSFT",
+            "Type": "StopLimit",
+            "Side": "Sell",
+            "StopPrice": 400,
+            "Price": 398,
+            "Quantity": 50
+        }
+    ]
+}
+```
+
 ## Response
 
 In response to this request, you'll receive a JSON file with comprehensive information about the newly created order:
