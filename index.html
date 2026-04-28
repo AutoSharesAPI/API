@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
 <title>AutoShares API Documentation</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
@@ -242,7 +244,7 @@ function loadDoc(path){
   var parts=path.replace(/README\.md$/,'').replace(/\.md$/,'').split('/').filter(Boolean);
   bc.innerHTML=parts.map(function(p){return'<span>'+p.replace(/-/g,' ').replace(/_/g,' ')+'</span>'}).join(' / ');
   document.querySelector('.sidebar').classList.remove('open');
-  fetch(path).then(function(r){
+  fetch(path+'?v='+Date.now()).then(function(r){
     if(!r.ok)throw new Error('Not found');
     return r.text();
   }).then(function(md){
