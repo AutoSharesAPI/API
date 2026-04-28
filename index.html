@@ -100,6 +100,17 @@ body{background:var(--bg);color:var(--t1);font-family:Inter,-apple-system,system
 [data-theme="dark"] .tryit-status-err{color:#ef4444}
 .tryit-time{font-size:10px;color:var(--t4);font-variant-numeric:tabular-nums}
 .tryit-output{background:var(--code-bg);border:1px solid var(--b1);border-radius:5px;padding:10px 12px;font-family:ui-monospace,monospace;font-size:11px;color:var(--t1);max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+/* Language tabs */
+.tryit-langs{display:flex;gap:0;border-bottom:1px solid var(--b1);margin-bottom:10px}
+.tryit-lang{padding:6px 14px;font-size:11px;font-weight:700;color:var(--t4);cursor:pointer;border:0;background:transparent;font-family:inherit;border-bottom:2px solid transparent;transition:all .12s}
+.tryit-lang:hover{color:var(--t1)}
+.tryit-lang.active{color:var(--ac-text);border-bottom-color:var(--ac-text)}
+.tryit-code-block{display:none}
+.tryit-code-block.active{display:block}
+.tryit-code-wrap{position:relative}
+.tryit-code-wrap pre{margin:0 0 8px;font-size:11px}
+.tryit-copy-lang{position:absolute;top:6px;right:6px;padding:3px 8px;border:1px solid var(--b1);border-radius:4px;background:var(--bg1);color:var(--t4);font-size:9px;font-weight:700;cursor:pointer;font-family:inherit}
+.tryit-copy-lang:hover{color:var(--ac-text);border-color:var(--ac-text)}
 .md table{width:100%;border-collapse:collapse;margin:0 0 16px;font-size:13px}
 .md th{text-align:left;padding:8px 10px;font-size:10px;font-weight:800;color:var(--t4);text-transform:uppercase;letter-spacing:.06em;background:var(--bg2);border-bottom:1px solid var(--b1)}
 .md td{padding:8px 10px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:top}
@@ -327,6 +338,102 @@ function parseCurl(txt){
     return{method:method,url:url,headers:headers,body:body};
   }catch(e){return null}
 }
+/* ── Code generators for each language ── */
+function genCurl(p){
+  var s="curl -X "+p.method;
+  var hk=Object.keys(p.headers);
+  for(var i=0;i<hk.length;i++) s+=" \\\n  --header '"+hk[i]+": "+p.headers[hk[i]]+"'";
+  s+=" \\\n  --header 'Accept: application/json'";
+  if(p.body) s+=" \\\n  --header 'Content-Type: application/json' \\\n  -d '"+p.body+"'";
+  s+=" \\\n  '"+p.url+"'";
+  return s;
+}
+function genPython(p){
+  var s='import requests\n\n';
+  s+='url = "'+p.url+'"\n';
+  s+='headers = {\n    "Accept": "application/json"';
+  var hk=Object.keys(p.headers);
+  for(var i=0;i<hk.length;i++) s+=',\n    "'+hk[i]+'": "'+p.headers[hk[i]]+'"';
+  if(p.body) s+=',\n    "Content-Type": "application/json"';
+  s+='\n}\n\n';
+  if(p.body){
+    s+='payload = '+p.body+'\n\n';
+    s+='response = requests.'+p.method.toLowerCase()+'(url, headers=headers, json=payload)\n';
+  } else {
+    s+='response = requests.'+p.method.toLowerCase()+'(url, headers=headers)\n';
+  }
+  s+='print(response.status_code)\nprint(response.json())';
+  return s;
+}
+function genJavascript(p){
+  var s='const response = await fetch("'+p.url+'", {\n';
+  s+='  method: "'+p.method+'",\n';
+  s+='  headers: {\n    "Accept": "application/json"';
+  var hk=Object.keys(p.headers);
+  for(var i=0;i<hk.length;i++) s+=',\n    "'+hk[i]+'": "'+p.headers[hk[i]]+'"';
+  if(p.body) s+=',\n    "Content-Type": "application/json"';
+  s+='\n  }';
+  if(p.body) s+=',\n  body: JSON.stringify('+p.body+')';
+  s+='\n});\n\nconst data = await response.json();\nconsole.log(data);';
+  return s;
+}
+function genCsharp(p){
+  var s='using var client = new HttpClient();\n\n';
+  s+='var request = new HttpRequestMessage(HttpMethod.'+p.method.charAt(0)+p.method.slice(1).toLowerCase()+', "'+p.url+'");\n';
+  s+='request.Headers.Add("Accept", "application/json");\n';
+  var hk=Object.keys(p.headers);
+  for(var i=0;i<hk.length;i++) s+='request.Headers.Add("'+hk[i]+'", "'+p.headers[hk[i]]+'");\n';
+  if(p.body) s+='\nrequest.Content = new StringContent(\n    @"'+p.body.replace(/"/g,'""')+'",\n    System.Text.Encoding.UTF8,\n    "application/json");\n';
+  s+='\nvar response = await client.SendAsync(request);\nvar body = await response.Content.ReadAsStringAsync();\nConsole.WriteLine($"{response.StatusCode}: {body}");';
+  return s;
+}
+function genGo(p){
+  var s='package main\n\nimport (\n\t"fmt"\n\t"io"\n\t"net/http"\n';
+  if(p.body) s+='\t"strings"\n';
+  s+=')\n\nfunc main() {\n';
+  if(p.body) s+='\tbody := strings.NewReader(`'+p.body+'`)\n\treq, _ := http.NewRequest("'+p.method+'", "'+p.url+'", body)\n';
+  else s+='\treq, _ := http.NewRequest("'+p.method+'", "'+p.url+'", nil)\n';
+  s+='\treq.Header.Set("Accept", "application/json")\n';
+  var hk=Object.keys(p.headers);
+  for(var i=0;i<hk.length;i++) s+='\treq.Header.Set("'+hk[i]+'", "'+p.headers[hk[i]]+'")\n';
+  if(p.body) s+='\treq.Header.Set("Content-Type", "application/json")\n';
+  s+='\n\tresp, err := http.DefaultClient.Do(req)\n\tif err != nil { panic(err) }\n\tdefer resp.Body.Close()\n\n\tdata, _ := io.ReadAll(resp.Body)\n\tfmt.Println(resp.Status)\n\tfmt.Println(string(data))\n}';
+  return s;
+}
+var LANGS=[
+  {id:'curl',label:'cURL',gen:genCurl},
+  {id:'python',label:'Python',gen:genPython},
+  {id:'javascript',label:'JavaScript',gen:genJavascript},
+  {id:'csharp',label:'C#',gen:genCsharp},
+  {id:'go',label:'Go',gen:genGo}
+];
+function buildLangTabs(parsed,panelId){
+  var html='<div class="tryit-langs">';
+  for(var i=0;i<LANGS.length;i++){
+    html+='<button class="tryit-lang'+(i===0?' active':'')+'" onclick="switchLang(\''+panelId+'\',\''+LANGS[i].id+'\')">'+LANGS[i].label+'</button>';
+  }
+  html+='</div>';
+  for(var i=0;i<LANGS.length;i++){
+    var code=LANGS[i].gen(parsed);
+    html+='<div class="tryit-code-block'+(i===0?' active':'')+'" data-lang="'+LANGS[i].id+'" id="'+panelId+'-'+LANGS[i].id+'"><div class="tryit-code-wrap"><pre><code>'+escHtml(code)+'</code></pre><button class="tryit-copy-lang" onclick="copyLangCode(this)">Copy</button></div></div>';
+  }
+  return html;
+}
+function switchLang(panelId,lang){
+  var panel=document.getElementById(panelId);
+  if(!panel)return;
+  var tabs=panel.querySelectorAll('.tryit-lang');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.toggle('active',tabs[i].textContent.toLowerCase().replace('#','sharp')===lang||LANGS.find(function(l){return l.id===lang})?.label===tabs[i].textContent);
+  var blocks=panel.querySelectorAll('.tryit-code-block');
+  for(var i=0;i<blocks.length;i++) blocks[i].classList.toggle('active',blocks[i].getAttribute('data-lang')===lang);
+}
+function copyLangCode(btn){
+  var code=btn.parentElement.querySelector('code');
+  navigator.clipboard.writeText(code.textContent).then(function(){
+    btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy'},1500);
+  });
+}
+
 function buildHeaderFields(headers){
   var html='';var keys=Object.keys(headers);
   if(!keys.length)return'';
@@ -447,14 +554,19 @@ function loadDoc(path){
       if(!/^curl[\s\-]/i.test(txt))continue;
       var parsed=parseCurl(txt);
       if(!parsed)continue;
+      var panelId='tryit-'+i+'-'+Date.now();
       var panel=document.createElement('div');
       panel.className='tryit';
+      panel.id=panelId;
       var mc=parsed.method.toLowerCase();
       panel.innerHTML='<div class="tryit-header" onclick="this.nextElementSibling.classList.toggle(\'open\')">'+
         '<span class="tryit-method tryit-method-'+mc+'">'+parsed.method+'</span>'+
         '<span class="tryit-url">'+escHtml(parsed.url)+'</span>'+
         '<span class="tryit-toggle">Try It</span></div>'+
         '<div class="tryit-body">'+
+        buildLangTabs(parsed,panelId)+
+        '<div style="border-top:1px solid var(--b1);padding-top:12px;margin-top:4px">'+
+        '<div class="tryit-label" style="margin-bottom:8px">Live Request</div>'+
         '<div class="tryit-row">'+
         '<div class="tryit-field" style="flex:2"><label class="tryit-label">URL</label><input class="tryit-inp tryit-url-inp" value="'+escHtml(parsed.url)+'"></div>'+
         '<div class="tryit-field"><label class="tryit-label">Method</label><input class="tryit-inp" value="'+parsed.method+'" readonly></div>'+
@@ -463,7 +575,7 @@ function loadDoc(path){
         (parsed.body?'<div class="tryit-field" style="margin-bottom:8px"><label class="tryit-label">Body</label><textarea class="tryit-inp tryit-body-inp" rows="4" style="resize:vertical;width:100%">'+escHtml(parsed.body)+'</textarea></div>':'')+
         '<button class="tryit-send" onclick="executeTryIt(this)">Send Request</button>'+
         '<div class="tryit-response"></div>'+
-        '</div>';
+        '</div></div>';
       curlBlocks[i].parentNode.insertBefore(panel,curlBlocks[i].nextSibling);
     }
     window.scrollTo(0,0);
