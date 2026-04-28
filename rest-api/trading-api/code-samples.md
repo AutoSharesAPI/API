@@ -1,14 +1,26 @@
 ---
-description: Explore examples of code that leverages ETNA API requests
+description: Explore examples of code that leverages AutoShares API requests
 ---
 
 # Code Samples
 
+## Base URL
+
+The base URL for all API requests is provided by AutoShares during onboarding. It is unique to your environment and takes the following form:
+
+```
+https://{your-environment}.etnasoft.us/api/
+```
+
+> **Important:** Your base URL will be provided by AutoShares when your API access is provisioned. Do not use the demo URLs shown in the examples below in production. Contact your AutoShares representative or email support@autoshares.com to obtain your production base URL, Et-App-Key, and API credentials.
+
+All examples in this documentation use a demo environment URL for illustration purposes only. Replace it with your assigned base URL in all requests.
+
 ## Introduction
 
-The previous articles of AutoShares's REST API documentation provide an in-depth look into the structure, syntax, and the range of possible responses for each endpoint of the trader's API. But before you proceed to examine each endpoint in detail, let's first walk through a few sample scripts that demonstrate how the API works in action.
+The following code samples provide a hands-on look at how the AutoShares API works in action. Each example includes Python code and a CURL command that you can adapt for your own integration.
 
-Each endpoint has its own URL and a set of parameters that must be provided in the request header, body, and query. For example, the initial authentication endpoint requires the credentials of a user in AutoShares as well as the application key that is retrievable from the BO Companies widget. It's critical to ensure that all required parameters are provided in the request; otherwise the request will fail.
+Each endpoint has its own URL and a set of parameters that must be provided in the request header, body, and query. For example, the initial authentication endpoint requires the credentials of a user in AutoShares as well as the application key (Et-App-Key) provided during onboarding. It's critical to ensure that all required parameters are provided in the request; otherwise the request will fail.
 
 If the request is successful, you'll receive a confirmation message as well as the 200 status code. If the request is improperly constructed or some parameters are lacking, you'll receive a status code in the range between 400 and 500.
 
