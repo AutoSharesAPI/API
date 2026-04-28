@@ -1,47 +1,63 @@
-# Sample Page
+# Get Token
 
-\[\[\_get\_token\]\] ==== Get token .... POST /token ....
+`POST /token`
 
-===== Description Authentication method that provides token to access API.
+Authentication method that provides a token to access the API.
 
-===== Parameters
+## Parameters
 
-\[options="header", cols=".^2,.^3,.^9,.^4,.^2"\] \|=== \|Type\|Name\|Description\|Schema\|Default \|**Header**\|**Authorization** + **optional**\|Authorization token, required on every step except first\|string\|`""` \|**Header**\|**Et-App-Key** + **required**\|Application key\|string\| \|**Header**\|**Password** + **optional**\|User password, required\|string\|`"testpassword"` \|**Header**\|**PinCode** + **optional**\|User pin code, on demand\|string\|`""` \|**Header**\|**Username** + **optional**\|User login, required\|string\|`"testusername"` \|**Header**\|**VerificationCode** + **optional**\|User verification code, on demand\|string\|`""` \|===
+| Type | Name | Description | Schema | Default |
+|------|------|-------------|--------|---------|
+| **Header** | **Authorization** *(optional)* | Authorization token, required on every step except first | string | `""` |
+| **Header** | **Et-App-Key** *(required)* | Application key | string | |
+| **Header** | **Password** *(optional)* | User password, required | string | `"testpassword"` |
+| **Header** | **PinCode** *(optional)* | User pin code, on demand | string | `""` |
+| **Header** | **Username** *(optional)* | User login, required | string | `"testusername"` |
+| **Header** | **VerificationCode** *(optional)* | User verification code, on demand | string | `""` |
 
-===== Responses
+## Responses
 
-\[options="header", cols=".^2,.^14,.^4"\] \|=== \|HTTP Code\|Description\|Schema \|**200**\|Authentication complete and token is ready to use.\|No Content \|**202**\|Several authentication steps are passed, but server is expecting additional parameters. Use a token from response and provide correct additional data to complete authentication procedure.\|No Content \|**401**\|Authentication parameters determined as incorrect.\|No Content \|===
+| HTTP Code | Description | Schema |
+|-----------|-------------|--------|
+| **200** | Authentication complete and token is ready to use. | No Content |
+| **202** | Several authentication steps are passed, but server is expecting additional parameters. Use the token from response and provide correct additional data to complete authentication. | No Content |
+| **401** | Authentication parameters determined as incorrect. | No Content |
 
-===== Produces
+## Response Fields
 
-* `State`
-* `Step`
-* `Reason`
-* `Token`
+- `State` — Authentication state (`Succeeded`, `Expecting`, `Failed`)
+- `Step` — Current authentication step (e.g. `SecurityPin`)
+- `Reason` — Failure/pending reason description
+- `Token` — Bearer token for subsequent API calls
 
-===== Example HTTP response
+## Example Responses
 
-====== Response 200
+### Response 200 — Success
 
-## \[source,json\]
+```json
+{
+  "State": "Succeeded",
+  "Token": "VGhpcyBpcyBleGFtcGxlIHRva2Vu..."
+}
+```
 
-{ "State" : "Succeeded", "Token" : "VGhpcyBpcyBleGFtcGxlIHRva2Vu..."
+### Response 202 — Additional Auth Required
 
-## }
+```json
+{
+  "Step": "SecurityPin",
+  "Reason": "Invalid pin",
+  "State": "Expecting",
+  "Token": "VGhpcyBpcyBleGFtcGxlIHRva2Vu...."
+}
+```
 
-====== Response 202
+### Response 401 — Authentication Failed
 
-## \[source,json\]
-
-{ "Step" : "SecutityPin", "Reason" : "Invalid pin", "State" : "Expecting", "Token" : "VGhpcyBpcyBleGFtcGxlIHRva2Vu...."
-
-## }
-
-====== Response 401
-
-## \[source,json\]
-
-{ "State" : "Failed", "Step" : "SecutityPin", "Reason" : "Invalid pin"
-
-## }
-
+```json
+{
+  "State": "Failed",
+  "Step": "SecurityPin",
+  "Reason": "Invalid pin"
+}
+```
