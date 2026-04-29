@@ -4,115 +4,56 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
 <title>AutoShares API Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
-/* ── Light theme (default) ── */
-:root, [data-theme="light"] {
-  --bg:#ffffff; --bg1:#f6f8fa; --bg2:#f0f2f5; --bg3:#e8ebef;
-  --b1:rgba(208,215,222,.7); --t1:#1f2328; --t2:#424a53; --t3:#656d76; --t4:#8b949e;
-  --ac:#00967d; --ac-dim:rgba(0,150,125,.08); --ac-text:#00967d;
-  --code-bg:#f0f2f5; --shadow:rgba(0,0,0,.08);
-}
-/* ── Dark theme ── */
-[data-theme="dark"] {
-  --bg:#0d1117; --bg1:#161b22; --bg2:#1c2128; --bg3:#21262d;
-  --b1:rgba(48,54,61,.7); --t1:#e6edf3; --t2:#b1bac4; --t3:#8b949e; --t4:#6e7681;
-  --ac:#00c9a7; --ac-dim:rgba(0,201,167,.12); --ac-text:#00c9a7;
-  --code-bg:#1c2128; --shadow:rgba(0,0,0,.4);
-}
+:root,[data-theme="light"]{--bg:#fff;--bg1:#f6f8fa;--bg2:#f0f2f5;--bg3:#e8ebef;--b1:rgba(208,215,222,.7);--b2:#d1d9e0;--t1:#1f2328;--t2:#424a53;--t3:#656d76;--t4:#8b949e;--ac:#00967d;--ac-dim:rgba(0,150,125,.08);--code-bg:#f6f8fa;--shadow:0 1px 3px rgba(0,0,0,.08)}
+[data-theme="dark"]{--bg:#0d1117;--bg1:#161b22;--bg2:#1c2128;--bg3:#21262d;--b1:rgba(48,54,61,.7);--b2:#30363d;--t1:#e6edf3;--t2:#b1bac4;--t3:#8b949e;--t4:#6e7681;--ac:#00c9a7;--ac-dim:rgba(0,201,167,.12);--code-bg:#161b22;--shadow:0 1px 3px rgba(0,0,0,.4)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--t1);font-family:Inter,-apple-system,system-ui,sans-serif;line-height:1.6;display:flex;min-height:100vh;transition:background .2s,color .2s}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',system-ui,sans-serif;line-height:1.6;display:flex;min-height:100vh;transition:background .2s,color .2s}
 
 /* Sidebar */
-.sidebar{width:280px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--b1);overflow-y:auto;padding:16px 0;position:fixed;top:0;left:0;bottom:0;z-index:10;transition:background .2s}
-.sb-header{padding:12px 20px 12px;border-bottom:1px solid var(--b1);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.sb-brand{display:flex;flex-direction:column}
-.sb-brand h1{font-size:16px;font-weight:800;color:var(--ac-text)}
-.sb-brand span{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
-.theme-btn{width:32px;height:32px;border:1px solid var(--b1);border-radius:6px;background:var(--bg2);color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:16px;flex-shrink:0}
-.theme-btn:hover{color:var(--ac-text);border-color:var(--ac-text)}
-.sb-section{padding:4px 0}
-.sb-section-title{padding:12px 20px 4px;font-size:9px;font-weight:800;color:var(--t4);text-transform:uppercase;letter-spacing:.08em}
-.sb-link{display:block;padding:5px 20px;font-size:13px;color:var(--t3);text-decoration:none;cursor:pointer;transition:all .1s;border-left:2px solid transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar{width:280px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--b1);overflow-y:auto;position:fixed;top:0;left:0;bottom:0;z-index:10;transition:background .2s}
+.sb-head{padding:14px 20px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center}
+.sb-brand h1{font-size:16px;font-weight:800;color:var(--ac)}
+.sb-brand span{font-size:9px;color:var(--t4);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.theme-btn{width:30px;height:30px;border:1px solid var(--b1);border-radius:6px;background:var(--bg2);color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.theme-btn:hover{color:var(--ac);border-color:var(--ac)}
+.sb-search{padding:8px 16px}
+.sb-search input{width:100%;padding:7px 10px;border:1.5px solid var(--b1);background:var(--bg);border-radius:6px;color:var(--t1);font-size:12px;font-family:inherit}
+.sb-search input:focus{border-color:var(--ac);outline:none}
+.sb-search input::placeholder{color:var(--t4)}
+.sb-section{padding:2px 0}
+.sb-section-title{padding:14px 20px 4px;font-size:9px;font-weight:800;color:var(--t4);text-transform:uppercase;letter-spacing:.08em}
+.sb-link{display:block;padding:5px 20px;font-size:12px;color:var(--t3);text-decoration:none;cursor:pointer;transition:all .1s;border-left:2px solid transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sb-link:hover{color:var(--t1);background:var(--bg2)}
-.sb-link.active{color:var(--ac-text);border-left-color:var(--ac-text);background:var(--ac-dim);font-weight:700}
-.sb-link.depth-1{padding-left:32px;font-size:12px}
-.sb-link.depth-2{padding-left:44px;font-size:12px}
-.sb-link.depth-3{padding-left:56px;font-size:11px}
+.sb-link.active{color:var(--ac);border-left-color:var(--ac);background:var(--ac-dim);font-weight:700}
+.sb-link.depth-1{padding-left:32px;font-size:11px}
+.sb-cta{display:block;margin:12px 16px;padding:8px 14px;background:var(--ac);color:#fff;border-radius:6px;font-size:12px;font-weight:800;text-align:center;text-decoration:none;transition:filter .12s}
+[data-theme="light"] .sb-cta{color:#000}
+.sb-cta:hover{filter:brightness(1.1)}
 .sb-toggle{display:none;padding:10px 16px;background:var(--bg1);border:0;border-bottom:1px solid var(--b1);color:var(--t2);font-size:14px;font-weight:700;cursor:pointer;width:100%;text-align:left;position:fixed;top:0;left:0;right:0;z-index:20;font-family:inherit}
 
 /* Content */
-.content{flex:1;margin-left:280px;padding:32px 40px;max-width:900px;transition:background .2s}
-.content.loading{opacity:.5}
+.content{flex:1;margin-left:280px;padding:32px 48px;max-width:960px;transition:background .2s}
 
 /* Markdown */
-.md h1{font-size:28px;font-weight:800;color:var(--t1);margin:0 0 16px;padding-bottom:8px;border-bottom:1px solid var(--b1)}
-.md h2{font-size:20px;font-weight:800;color:var(--t1);margin:28px 0 12px}
-.md h3{font-size:16px;font-weight:700;color:var(--t2);margin:20px 0 8px}
-.md h4{font-size:14px;font-weight:700;color:var(--t3);margin:16px 0 6px}
-.md p{color:var(--t2);margin:0 0 12px;font-size:14px;line-height:1.7}
-.md a{color:var(--ac-text);text-decoration:none;font-weight:600}
+.md h1{font-size:26px;font-weight:800;color:var(--t1);margin:0 0 16px;padding-bottom:8px;border-bottom:1px solid var(--b1)}
+.md h2{font-size:19px;font-weight:800;color:var(--t1);margin:28px 0 10px}
+.md h3{font-size:15px;font-weight:700;color:var(--t2);margin:20px 0 8px}
+.md h4{font-size:13px;font-weight:700;color:var(--t3);margin:14px 0 6px}
+.md p{color:var(--t2);margin:0 0 12px;font-size:13.5px;line-height:1.7}
+.md a{color:var(--ac);text-decoration:none;font-weight:600}
 .md a:hover{text-decoration:underline}
-.md ul,.md ol{margin:0 0 12px 20px;color:var(--t2);font-size:14px}
+.md ul,.md ol{margin:0 0 12px 20px;color:var(--t2);font-size:13.5px}
 .md li{margin-bottom:4px}
-.md code{font-family:ui-monospace,'SF Mono',monospace;font-size:12px;padding:2px 6px;background:var(--code-bg);border-radius:4px;color:var(--ac-text)}
+.md code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;padding:2px 6px;background:var(--code-bg);border:1px solid var(--b1);border-radius:4px;color:var(--ac)}
 .md pre{background:var(--code-bg);border:1px solid var(--b1);border-radius:7px;padding:14px 16px;overflow-x:auto;margin:0 0 16px;font-size:12px;line-height:1.5;position:relative}
-.md pre code{padding:0;background:none;color:var(--t1)}
-/* Copy button on code blocks */
-.copy-btn{position:absolute;top:6px;right:6px;padding:4px 8px;border:1px solid var(--b1);border-radius:4px;background:var(--bg1);color:var(--t4);font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transition:opacity .15s}
-.md pre:hover .copy-btn{opacity:1}
-.copy-btn:hover{color:var(--ac-text);border-color:var(--ac-text)}
-.copy-btn.copied{color:var(--ac-text);border-color:var(--ac-text)}
-/* Try It panel */
-.tryit{margin:0 0 16px;border:1px solid var(--b1);border-radius:7px;overflow:hidden}
-.tryit-header{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--b1);cursor:pointer}
-.tryit-header:hover{background:var(--bg3)}
-.tryit-method{font-size:10px;font-weight:800;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.04em}
-.tryit-method-get{background:rgba(34,197,94,.12);color:#16a34a}
-.tryit-method-post{background:rgba(0,153,255,.12);color:#0077cc}
-.tryit-method-put{background:rgba(245,158,11,.12);color:#d97706}
-.tryit-method-delete{background:rgba(239,68,68,.12);color:#dc2626}
-[data-theme="dark"] .tryit-method-get{color:#22c55e}
-[data-theme="dark"] .tryit-method-post{color:#0099ff}
-[data-theme="dark"] .tryit-method-put{color:#f59e0b}
-[data-theme="dark"] .tryit-method-delete{color:#ef4444}
-.tryit-url{font-family:ui-monospace,monospace;font-size:12px;color:var(--t2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tryit-toggle{font-size:10px;font-weight:700;color:var(--ac-text);text-transform:uppercase;letter-spacing:.06em}
-.tryit-body{display:none;padding:14px;background:var(--bg1)}
-.tryit-body.open{display:block}
-.tryit-row{display:flex;gap:8px;margin-bottom:8px;align-items:flex-end;flex-wrap:wrap}
-.tryit-field{display:flex;flex-direction:column;gap:3px;flex:1;min-width:140px}
-.tryit-label{font-size:9px;font-weight:800;color:var(--t4);text-transform:uppercase;letter-spacing:.06em}
-.tryit-inp{padding:6px 8px;border:1.5px solid var(--b1);background:var(--bg);border-radius:4px;color:var(--t1);font-size:12px;font-family:ui-monospace,monospace}
-.tryit-inp:focus{border-color:var(--ac-text);outline:none}
-.tryit-send{padding:7px 16px;background:var(--ac-text);color:#fff;border:0;border-radius:5px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap}
-[data-theme="light"] .tryit-send{color:#000}
-.tryit-send:hover{filter:brightness(1.1)}
-.tryit-send:disabled{opacity:.5;cursor:not-allowed}
-.tryit-response{margin-top:10px}
-.tryit-response-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.tryit-status{font-size:11px;font-weight:800;font-variant-numeric:tabular-nums}
-.tryit-status-ok{color:#16a34a}
-.tryit-status-err{color:#dc2626}
-[data-theme="dark"] .tryit-status-ok{color:#22c55e}
-[data-theme="dark"] .tryit-status-err{color:#ef4444}
-.tryit-time{font-size:10px;color:var(--t4);font-variant-numeric:tabular-nums}
-.tryit-output{background:var(--code-bg);border:1px solid var(--b1);border-radius:5px;padding:10px 12px;font-family:ui-monospace,monospace;font-size:11px;color:var(--t1);max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-all}
-/* Language tabs */
-.tryit-langs{display:flex;gap:0;border-bottom:1px solid var(--b1);margin-bottom:10px}
-.tryit-lang{padding:6px 14px;font-size:11px;font-weight:700;color:var(--t4);cursor:pointer;border:0;background:transparent;font-family:inherit;border-bottom:2px solid transparent;transition:all .12s}
-.tryit-lang:hover{color:var(--t1)}
-.tryit-lang.active{color:var(--ac-text);border-bottom-color:var(--ac-text)}
-.tryit-code-block{display:none}
-.tryit-code-block.active{display:block}
-.tryit-code-wrap{position:relative}
-.tryit-code-wrap pre{margin:0 0 8px;font-size:11px}
-.tryit-copy-lang{position:absolute;top:6px;right:6px;padding:3px 8px;border:1px solid var(--b1);border-radius:4px;background:var(--bg1);color:var(--t4);font-size:9px;font-weight:700;cursor:pointer;font-family:inherit}
-.tryit-copy-lang:hover{color:var(--ac-text);border-color:var(--ac-text)}
-.md table{width:100%;border-collapse:collapse;margin:0 0 16px;font-size:13px}
-.md th{text-align:left;padding:8px 10px;font-size:10px;font-weight:800;color:var(--t4);text-transform:uppercase;letter-spacing:.06em;background:var(--bg2);border-bottom:1px solid var(--b1)}
+.md pre code{padding:0;background:none;border:0;color:var(--t1)}
+.md table{width:100%;border-collapse:collapse;margin:0 0 16px;font-size:12px}
+.md th{text-align:left;padding:8px 10px;font-size:9px;font-weight:800;color:var(--t4);text-transform:uppercase;letter-spacing:.06em;background:var(--bg2);border-bottom:1px solid var(--b1)}
 .md td{padding:8px 10px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:top}
 .md tr:hover td{background:var(--bg2)}
 .md blockquote{border-left:3px solid var(--ac);margin:0 0 16px;padding:8px 16px;background:var(--ac-dim);border-radius:0 5px 5px 0}
@@ -120,27 +61,44 @@ body{background:var(--bg);color:var(--t1);font-family:Inter,-apple-system,system
 .md img{max-width:100%;border-radius:6px;border:1px solid var(--b1);margin:8px 0}
 .md hr{border:0;border-top:1px solid var(--b1);margin:24px 0}
 
-/* HTTP badges */
-.badge{display:inline-block;font-size:9px;font-weight:800;padding:2px 6px;border-radius:3px;margin-right:4px;text-transform:uppercase;letter-spacing:.04em;vertical-align:middle}
-.badge-get{background:rgba(34,197,94,.12);color:#16a34a}
-.badge-post{background:rgba(0,153,255,.12);color:#0077cc}
-.badge-put{background:rgba(245,158,11,.12);color:#d97706}
-.badge-delete{background:rgba(239,68,68,.12);color:#dc2626}
-[data-theme="dark"] .badge-get{color:#22c55e}
-[data-theme="dark"] .badge-post{color:#0099ff}
-[data-theme="dark"] .badge-put{color:#f59e0b}
-[data-theme="dark"] .badge-delete{color:#ef4444}
+/* API Reference */
+.endpoint{margin-bottom:12px;border:1px solid var(--b1);border-radius:8px;overflow:hidden;box-shadow:var(--shadow)}
+.ep-head{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg1);cursor:pointer;transition:background .1s}
+.ep-head:hover{background:var(--bg2)}
+.ep-badge{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:800;padding:3px 8px;border-radius:4px;min-width:52px;text-align:center;text-transform:uppercase}
+.ep-get{background:rgba(34,197,94,.12);color:#16a34a}
+.ep-post{background:rgba(0,153,255,.12);color:#0077cc}
+.ep-put{background:rgba(245,158,11,.12);color:#d97706}
+.ep-delete{background:rgba(239,68,68,.12);color:#dc2626}
+[data-theme="dark"] .ep-get{color:#22c55e}[data-theme="dark"] .ep-post{color:#0099ff}[data-theme="dark"] .ep-put{color:#f59e0b}[data-theme="dark"] .ep-delete{color:#ef4444}
+.ep-path{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t1);font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ep-sum{font-size:11px;color:var(--t4);max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ep-body{display:none;padding:16px;border-top:1px solid var(--b1);background:var(--bg)}
+.ep-body.open{display:block}
+.ep-body h4{font-size:11px;font-weight:800;color:var(--t4);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 6px}
+.ep-body h4:first-child{margin-top:0}
+.ep-body p{font-size:12px}
+.ep-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:12px}
+.ep-tbl th{text-align:left;padding:6px 8px;font-size:8px;font-weight:800;color:var(--t4);text-transform:uppercase;letter-spacing:.06em;background:var(--bg2);border-bottom:1px solid var(--b1)}
+.ep-tbl td{padding:6px 8px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:top}
+.ep-tbl code{font-size:10px;border:0}
+.ep-curl{background:var(--code-bg);border:1px solid var(--b1);border-radius:6px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t1);overflow-x:auto;white-space:pre;margin-top:6px;position:relative}
+.lang-tabs{display:flex;gap:0;border-bottom:1px solid var(--b1);margin:12px 0 0}
+.lang-tab{padding:5px 12px;font-size:10px;font-weight:700;color:var(--t4);cursor:pointer;border:0;background:transparent;font-family:inherit;border-bottom:2px solid transparent;transition:all .12s}
+.lang-tab:hover{color:var(--t1)}
+.lang-tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.lang-block{display:none}
+.lang-block.on{display:block}
 
-/* Search */
-.sb-search{padding:8px 16px}
-.sb-search input{width:100%;padding:6px 10px;border:1.5px solid var(--b1);background:var(--bg);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;transition:border-color .15s}
-.sb-search input:focus{border-color:var(--ac-text);outline:none}
-.sb-search input::placeholder{color:var(--t4)}
+/* Copy button */
+.copy-btn{position:absolute;top:6px;right:6px;padding:3px 8px;border:1px solid var(--b1);border-radius:4px;background:var(--bg1);color:var(--t4);font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transition:opacity .15s}
+pre:hover .copy-btn,.ep-curl:hover .copy-btn{opacity:1}
+.copy-btn:hover{color:var(--ac);border-color:var(--ac)}
 
-/* Breadcrumb */
-.breadcrumb{font-size:11px;color:var(--t4);margin-bottom:16px}
-.breadcrumb span{color:var(--t3)}
+/* Footer */
+.footer{margin-top:40px;padding:20px 0;border-top:1px solid var(--b1);font-size:10px;color:var(--t4);line-height:1.6}
 
+/* Responsive */
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%);transition:transform .2s;width:280px}
   .sidebar.open{transform:translateX(0)}
@@ -152,444 +110,233 @@ body{background:var(--bg);color:var(--t1);font-family:Inter,-apple-system,system
 <body>
 <button class="sb-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">Menu</button>
 <nav class="sidebar" id="sidebar">
-  <div class="sb-header">
-    <div class="sb-brand">
-      <h1>AutoShares</h1>
-      <span>API Documentation</span>
-    </div>
-    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle dark/light mode"></button>
+  <div class="sb-head">
+    <div class="sb-brand"><h1>AutoShares</h1><span>API Documentation</span></div>
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn"></button>
   </div>
-  <div class="sb-search">
-    <input type="text" id="sb-filter" placeholder="Filter docs..." oninput="filterNav(this.value)">
-  </div>
+  <div class="sb-search"><input type="text" id="sb-filter" placeholder="Search docs..." oninput="filterNav(this.value)"></div>
+  <a class="sb-cta" href="https://demo.autoshares.com" target="_blank">Get API Access</a>
   <div id="nav-tree"></div>
 </nav>
-<main class="content md" id="content">
-  <div class="breadcrumb" id="breadcrumb"></div>
-  <div id="doc"></div>
-</main>
+<main class="content md" id="content"></main>
+
 <script>
-/* ── Theme toggle ── */
-function getTheme(){return localStorage.getItem('as-docs-theme')||'light'}
-function applyTheme(t){
-  document.documentElement.setAttribute('data-theme',t);
-  document.getElementById('theme-btn').textContent=t==='dark'?'\u2600':'\u263D';
-  localStorage.setItem('as-docs-theme',t);
-}
+/* ── Theme ── */
+function getTheme(){return localStorage.getItem('as-theme')||'light'}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('theme-btn').textContent=t==='dark'?'\u2600':'\u263D';localStorage.setItem('as-theme',t)}
 function toggleTheme(){applyTheme(getTheme()==='dark'?'light':'dark')}
 applyTheme(getTheme());
 
-/* ── Navigation data ── */
-var NAV_DATA=[
-{s:'AutoShares API',items:[
-{t:'What is AutoShares?',p:'README.md',d:0},
-{t:'Quick Start Guide',p:'web-api/introduction.md',d:0},
-{t:'API Overview',p:'web-api/trading-api/overview.md',d:0},
-{t:'Authentication',p:'etna-trader-rest-api/public-api/Login/Get_token.md',d:0}
-]},
-{s:'User Management',items:[
-{t:'Onboarding Users',p:'web-api/trading-api/managing-users/README.md',d:0},
-{t:'Account Setup',p:'web-api/trading-api/managing-users/get-users-info/README.md',d:1},
-{t:'Add Account To User',p:'web-api/trading-api/user-accounts/list-users-accounts-6.md',d:2},
-{t:'Get All Accounts',p:'web-api/trading-api/user-accounts/list-users-accounts.md',d:2},
-{t:'Get Account Info',p:'web-api/trading-api/user-accounts/list-users-accounts-2.md',d:2},
-{t:'Trading Settings',p:'web-api/trading-api/managing-users/get-users-settings.md',d:2},
-{t:'User Exchanges',p:'web-api/trading-api/managing-users/get-users-exchanges.md',d:2},
-{t:'Sign Agreements',p:'web-api/trading-api/agreements/get-a-traders-agreements.md',d:1}
-]},
-{s:'Balances & Buying Power',items:[
-{t:'Overview',p:'web-api/trading-api/user-accounts/README.md',d:0},
-{t:'Balance Info For User',p:'web-api/trading-api/managing-users/get-balance-information-for-a-user.md',d:1},
-{t:'Account Balance Info',p:'web-api/trading-api/user-accounts/get-accounts-balance-info.md',d:1},
-{t:'Historical Account Value',p:'web-api/trading-api/user-accounts/list-users-accounts-3.md',d:1}
-]},
-{s:'ACH, Wires & Transfers',items:[
-{t:'Overview',p:'web-api/trading-api/account-funding/README.md',d:0},
-{t:'Create ACH Relationship',p:'web-api/trading-api/account-funding/create-an-ach-relationship.md',d:1},
-{t:'ACH via Plaid',p:'web-api/trading-api/account-funding/create-an-ach-relationship-via-plaid.md',d:1},
-{t:'Approve ACH',p:'web-api/trading-api/account-funding/approve-an-ach-relationship.md',d:1},
-{t:'Get ACH Relationship',p:'web-api/trading-api/account-funding/get-an-ach-relationship.md',d:1},
-{t:'Get All ACH',p:'web-api/trading-api/account-funding/get-all-ach-relationships.md',d:1},
-{t:'Default ACH',p:'web-api/trading-api/account-funding/get-the-default-ach-relationship.md',d:1},
-{t:'Modify ACH',p:'web-api/trading-api/account-funding/modify-an-ach-relationship.md',d:1},
-{t:'Remove ACH',p:'web-api/trading-api/account-funding/delete-an-ach-relationship.md',d:1},
-{t:'Deposit / Withdraw',p:'web-api/trading-api/account-funding/deposit-withdraw-funds.md',d:1},
-{t:'Cancel Transfer',p:'web-api/trading-api/account-funding/cancel-an-ach-transfer.md',d:1},
-{t:'Get All Transfers',p:'web-api/trading-api/account-funding/get-all-transfers.md',d:1}
-]},
-{s:'Orders & Trading',items:[
-{t:'Overview',p:'web-api/trading-api/orders/README.md',d:0},
-{t:'Place Order',p:'web-api/trading-api/orders/place-order/README.md',d:1},
-{t:'Place Order Syntax',p:'web-api/trading-api/orders/place-order/orders_placeorder.md',d:2},
-{t:'Verify Placement',p:'web-api/trading-api/orders/validate-order-placement/README.md',d:1},
-{t:'Verify Replacement',p:'web-api/trading-api/orders/validate-order-replacement/README.md',d:1},
-{t:'Replace Order',p:'web-api/trading-api/orders/replace-order/README.md',d:1},
-{t:'Cancel Order',p:'web-api/trading-api/orders/cancel-order/README.md',d:1},
-{t:'Get Order Info',p:'web-api/trading-api/orders/get-orders-info/README.md',d:1},
-{t:'Get Filtered Orders',p:'web-api/trading-api/orders/get-filtered-orders/README.md',d:1},
-{t:'Validate Order by ID',p:'web-api/trading-api/orders/validate-order-by-id.md',d:1}
-]},
-{s:'Positions',items:[
-{t:'Overview',p:'web-api/trading-api/positions/README.md',d:0},
-{t:'Get Positions',p:'web-api/trading-api/positions/get-users-positions/README.md',d:1},
-{t:'Positions Syntax',p:'web-api/trading-api/positions/get-users-positions/positions_getpositions.md',d:2},
-{t:'Position in Security',p:'web-api/trading-api/positions/get-users-positions-in-security/README.md',d:1},
-{t:'Market Value by Group',p:'web-api/trading-api/positions/get-market-value-of-all-security-types.md',d:1}
-]},
-{s:'Securities',items:[
-{t:'Overview',p:'web-api/trading-api/securities/README.md',d:0},
-{t:'Equity by ID',p:'web-api/trading-api/securities/get-securitys-info-by-internal-id/README.md',d:1},
-{t:'Equity by Ticker',p:'web-api/trading-api/securities/get-securitys-info-by-ticker/README.md',d:1},
-{t:'Equity by Mask',p:'web-api/trading-api/securities/get-securitys-info-by-mask/README.md',d:1},
-{t:'Filtered Equities',p:'web-api/trading-api/securities/get-filtered-equities/README.md',d:1},
-{t:'Option by ID',p:'web-api/trading-api/securities/get-option-info-by-internal-id/README.md',d:1},
-{t:'Option by Ticker',p:'web-api/trading-api/securities/get-option-info-by-ticker/README.md',d:1},
-{t:'Options Expirations',p:'web-api/trading-api/securities/get-options-expiration-dates/README.md',d:1},
-{t:'Option Chain',p:'web-api/trading-api/securities/get-an-option-chain.md',d:1},
-{t:'Filtered Options',p:'web-api/trading-api/securities/get-filtered-options/README.md',d:1},
-{t:'Company Logo',p:'web-api/trading-api/securities/get-company-logo-by-symbol.md',d:1}
-]},
-{s:'Streaming Data',items:[
-{t:'Endpoints Overview',p:'web-api/trading-api/streaming-data/README.md',d:0},
-{t:'Get Streamers Info',p:'web-api/trading-api/streaming-data/api-endpoints/get-streamers-info.md',d:1},
-{t:'Recover Session',p:'web-api/trading-api/streaming-data/api-endpoints/recover-a-streamer-session.md',d:1},
-{t:'Quotes',p:'web-api/trading-api/streaming-data/quotes.md',d:1},
-{t:'Orders Stream',p:'web-api/trading-api/streaming-data/orders.md',d:1},
-{t:'Positions Stream',p:'web-api/trading-api/streaming-data/positions.md',d:1},
-{t:'Watchlists Stream',p:'web-api/trading-api/streaming-data/watchlists.md',d:1},
-{t:'Account Balances',p:'web-api/trading-api/streaming-data/account-balances.md',d:1},
-{t:'User Balance',p:'web-api/trading-api/streaming-data/user-balance.md',d:1}
-]},
-{s:'Historical Data',items:[
-{t:'Overview',p:'web-api/trading-api/historical-data/README.md',d:0},
-{t:'Comparison Chart',p:'web-api/trading-api/historical-data/get-chart-data/README.md',d:1},
-{t:'Candles & Indicators',p:'web-api/trading-api/historical-data/get-candles-and-indicators-for-charts/README.md',d:1},
-{t:'Export to Excel',p:'web-api/trading-api/historical-data/get-chart-data-in-the-excel-format/README.md',d:1}
-]},
-{s:'Price Alerts',items:[
-{t:'Overview',p:'web-api/trading-api/price-alerts/README.md',d:0},
-{t:'Create Alert',p:'web-api/trading-api/price-alerts/create-price-alert/README.md',d:1},
-{t:'Delete Alert',p:'web-api/trading-api/price-alerts/delete-price-alert/README.md',d:1},
-{t:'Get Specific Alert',p:'web-api/trading-api/price-alerts/get-specific-alert/README.md',d:1},
-{t:'Get All Alerts',p:'web-api/trading-api/price-alerts/get-users-price-alerts/README.md',d:1},
-{t:'Modify Alert',p:'web-api/trading-api/price-alerts/modify-price-alert/README.md',d:1}
-]},
-{s:'Watchlists',items:[
-{t:'Overview',p:'web-api/trading-api/watchlists/README.md',d:0},
-{t:'Add by ID',p:'web-api/trading-api/watchlists/add-security-to-watchlist-by-id/README.md',d:1},
-{t:'Add by Ticker',p:'web-api/trading-api/watchlists/add-security-to-watchlist-by-ticker/README.md',d:1},
-{t:'Create Watchlist',p:'web-api/trading-api/watchlists/create-new-watchlist/README.md',d:1},
-{t:'Delete Watchlist',p:'web-api/trading-api/watchlists/delete-watchlist/README.md',d:1},
-{t:'Get Watchlist',p:'web-api/trading-api/watchlists/get-specific-watchlist/README.md',d:1},
-{t:'Get All Watchlists',p:'web-api/trading-api/watchlists/get-users-watchlist/README.md',d:1},
-{t:'Remove by ID',p:'web-api/trading-api/watchlists/remove-security-from-watchlist-by-id/README.md',d:1},
-{t:'Remove by Ticker',p:'web-api/trading-api/watchlists/remove-security-from-watchlist-by-ticker/README.md',d:1},
-{t:'Rename Watchlist',p:'web-api/trading-api/watchlists/rename-watchlist/README.md',d:1}
-]},
-{s:'News & Corporate Actions',items:[
-{t:'Overview',p:'web-api/trading-api/news/README.md',d:0},
-{t:'Get News',p:'web-api/trading-api/news/get-news-for-a-security.md',d:1},
-{t:'Corporate Actions',p:'web-api/trading-api/news/get-corporate-actions-for-a-security.md',d:1}
-]},
-{s:'Transactions',items:[
-{t:'Overview',p:'web-api/trading-api/managing-transactions/README.md',d:0},
-{t:'Get Transactions',p:'web-api/trading-api/managing-transactions/get-transactions/README.md',d:1}
-]},
-{s:'Code Samples',items:[
-{t:'Public API Samples',p:'rest-api/trading-api/code-samples.md',d:0},
-{t:'Streaming Data',p:'rest-api/trading-api/streaming-data.md',d:0}
-]},
-{s:'Definitions',items:[
-{t:'Overview',p:'web-api/trading-api/definitions/README.md',d:0},
-{t:'Part I',p:'web-api/trading-api/definitions/part-i.md',d:1},
-{t:'Part II',p:'web-api/trading-api/definitions/part-ii.md',d:1},
-{t:'Part III',p:'web-api/trading-api/definitions/part-iii.md',d:1}
+/* ── Data ── */
+var GUIDES=[
+{s:'Getting Started',items:[
+{t:'Welcome',p:'pages/welcome.md'},{t:'Get API Access',p:'pages/signup.md'},{t:'Quick Start Guide',p:'pages/quickstart.md'},
+{t:'Environments & Base URL',p:'pages/environments.md'},{t:'Authentication',p:'pages/authentication.md'},{t:'API Overview',p:'pages/api-overview.md'}
 ]},
 {s:'Guides',items:[
-{t:'User Guide',p:'user-guide/introduction.md',d:0},
-{t:'Web Terminal',p:'user-guide/web-terminal/README.md',d:1},
-{t:'Platform Layout',p:'user-guide/web-terminal/platform-layout.md',d:2},
-{t:'Widgets',p:'user-guide/web-terminal/user-widgets/README.md',d:2},
-{t:'Trade Ticket',p:'user-guide/web-terminal/user-widgets/trade-ticket/README.md',d:2},
-{t:'Watchlists',p:'user-guide/web-terminal/user-widgets/watchlists.md',d:2},
-{t:'Market Depth',p:'user-guide/web-terminal/user-widgets/market-depth.md',d:2}
+{t:'Code Samples',p:'pages/code-samples.md'},{t:'Placing Orders',p:'pages/place-order.md'},{t:'Streaming Data',p:'pages/streaming-data.md'},
+{t:'Pagination',p:'pages/pagination.md'},{t:'Error Codes',p:'pages/error-codes.md'},{t:'Rate Limiting',p:'pages/rate-limits.md'},
+{t:'Webhooks',p:'pages/webhooks.md'}
+]},
+{s:'SDKs & Tools',items:[
+{t:'SDKs & Libraries',p:'pages/sdks.md'},{t:'User Guide',p:'pages/user-guide.md'},{t:'Web Terminal',p:'pages/web-terminal.md'}
+]},
+{s:'Resources',items:[
+{t:'Changelog',p:'pages/changelog.md'}
 ]}
 ];
 
-/* ── Helper functions ── */
-function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function parseCurl(txt){
-  try{
-    txt=txt.replace(/\\\s*\n/g,' ').replace(/\s+/g,' ').trim();
-    var method='GET';
-    var mm=txt.match(/-X\s+(\w+)/);if(mm)method=mm[1].toUpperCase();
-    else if(/-d\s/.test(txt)||/--data/.test(txt))method='POST';
-    var url='';var um=txt.match(/'(https?:\/\/[^']+)'/);if(um)url=um[1];
-    if(!um){um=txt.match(/"(https?:\/\/[^"]+)"/);if(um)url=um[1]}
-    if(!url){um=txt.match(/'([^']*etnasoft[^']*)/);if(um)url=um[1]}
-    if(!url)return null;
-    var headers={};var re=/--header\s+'([^:]+):\s*([^']+)'/g;var h;
-    while((h=re.exec(txt))!==null){
-      var hname=h[1].trim();
-      if(hname.toLowerCase()!=='content-type'&&hname.toLowerCase()!=='accept')headers[hname]=h[2].trim();
-    }
-    var body='';var bm=txt.match(/-d\s+'([\s\S]*?)'\s*(?:'|$)/);
-    if(bm)body=bm[1].replace(/\\\s*/g,'').trim();
-    return{method:method,url:url,headers:headers,body:body};
-  }catch(e){return null}
-}
-/* ── Code generators for each language ── */
-function genCurl(p){
-  var s="curl -X "+p.method;
-  var hk=Object.keys(p.headers);
-  for(var i=0;i<hk.length;i++) s+=" \\\n  --header '"+hk[i]+": "+p.headers[hk[i]]+"'";
-  s+=" \\\n  --header 'Accept: application/json'";
-  if(p.body) s+=" \\\n  --header 'Content-Type: application/json' \\\n  -d '"+p.body+"'";
-  s+=" \\\n  '"+p.url+"'";
-  return s;
-}
-function genPython(p){
-  var s='import requests\n\n';
-  s+='url = "'+p.url+'"\n';
-  s+='headers = {\n    "Accept": "application/json"';
-  var hk=Object.keys(p.headers);
-  for(var i=0;i<hk.length;i++) s+=',\n    "'+hk[i]+'": "'+p.headers[hk[i]]+'"';
-  if(p.body) s+=',\n    "Content-Type": "application/json"';
-  s+='\n}\n\n';
-  if(p.body){
-    s+='payload = '+p.body+'\n\n';
-    s+='response = requests.'+p.method.toLowerCase()+'(url, headers=headers, json=payload)\n';
-  } else {
-    s+='response = requests.'+p.method.toLowerCase()+'(url, headers=headers)\n';
-  }
-  s+='print(response.status_code)\nprint(response.json())';
-  return s;
-}
-function genJavascript(p){
-  var s='const response = await fetch("'+p.url+'", {\n';
-  s+='  method: "'+p.method+'",\n';
-  s+='  headers: {\n    "Accept": "application/json"';
-  var hk=Object.keys(p.headers);
-  for(var i=0;i<hk.length;i++) s+=',\n    "'+hk[i]+'": "'+p.headers[hk[i]]+'"';
-  if(p.body) s+=',\n    "Content-Type": "application/json"';
-  s+='\n  }';
-  if(p.body) s+=',\n  body: JSON.stringify('+p.body+')';
-  s+='\n});\n\nconst data = await response.json();\nconsole.log(data);';
-  return s;
-}
-function genCsharp(p){
-  var s='using var client = new HttpClient();\n\n';
-  s+='var request = new HttpRequestMessage(HttpMethod.'+p.method.charAt(0)+p.method.slice(1).toLowerCase()+', "'+p.url+'");\n';
-  s+='request.Headers.Add("Accept", "application/json");\n';
-  var hk=Object.keys(p.headers);
-  for(var i=0;i<hk.length;i++) s+='request.Headers.Add("'+hk[i]+'", "'+p.headers[hk[i]]+'");\n';
-  if(p.body) s+='\nrequest.Content = new StringContent(\n    @"'+p.body.replace(/"/g,'""')+'",\n    System.Text.Encoding.UTF8,\n    "application/json");\n';
-  s+='\nvar response = await client.SendAsync(request);\nvar body = await response.Content.ReadAsStringAsync();\nConsole.WriteLine($"{response.StatusCode}: {body}");';
-  return s;
-}
-function genGo(p){
-  var s='package main\n\nimport (\n\t"fmt"\n\t"io"\n\t"net/http"\n';
-  if(p.body) s+='\t"strings"\n';
-  s+=')\n\nfunc main() {\n';
-  if(p.body) s+='\tbody := strings.NewReader(`'+p.body+'`)\n\treq, _ := http.NewRequest("'+p.method+'", "'+p.url+'", body)\n';
-  else s+='\treq, _ := http.NewRequest("'+p.method+'", "'+p.url+'", nil)\n';
-  s+='\treq.Header.Set("Accept", "application/json")\n';
-  var hk=Object.keys(p.headers);
-  for(var i=0;i<hk.length;i++) s+='\treq.Header.Set("'+hk[i]+'", "'+p.headers[hk[i]]+'")\n';
-  if(p.body) s+='\treq.Header.Set("Content-Type", "application/json")\n';
-  s+='\n\tresp, err := http.DefaultClient.Do(req)\n\tif err != nil { panic(err) }\n\tdefer resp.Body.Close()\n\n\tdata, _ := io.ReadAll(resp.Body)\n\tfmt.Println(resp.Status)\n\tfmt.Println(string(data))\n}';
-  return s;
-}
-var LANGS=[
-  {id:'curl',label:'cURL',gen:genCurl},
-  {id:'python',label:'Python',gen:genPython},
-  {id:'javascript',label:'JavaScript',gen:genJavascript},
-  {id:'csharp',label:'C#',gen:genCsharp},
-  {id:'go',label:'Go',gen:genGo}
-];
-function buildLangTabs(parsed,panelId){
-  var html='<div class="tryit-langs">';
-  for(var i=0;i<LANGS.length;i++){
-    html+='<button class="tryit-lang'+(i===0?' active':'')+'" onclick="switchLang(\''+panelId+'\',\''+LANGS[i].id+'\')">'+LANGS[i].label+'</button>';
-  }
-  html+='</div>';
-  for(var i=0;i<LANGS.length;i++){
-    var code=LANGS[i].gen(parsed);
-    html+='<div class="tryit-code-block'+(i===0?' active':'')+'" data-lang="'+LANGS[i].id+'" id="'+panelId+'-'+LANGS[i].id+'"><div class="tryit-code-wrap"><pre><code>'+escHtml(code)+'</code></pre><button class="tryit-copy-lang" onclick="copyLangCode(this)">Copy</button></div></div>';
-  }
-  return html;
-}
-function switchLang(panelId,lang){
-  var panel=document.getElementById(panelId);
-  if(!panel)return;
-  var tabs=panel.querySelectorAll('.tryit-lang');
-  for(var i=0;i<tabs.length;i++) tabs[i].classList.toggle('active',tabs[i].textContent.toLowerCase().replace('#','sharp')===lang||LANGS.find(function(l){return l.id===lang})?.label===tabs[i].textContent);
-  var blocks=panel.querySelectorAll('.tryit-code-block');
-  for(var i=0;i<blocks.length;i++) blocks[i].classList.toggle('active',blocks[i].getAttribute('data-lang')===lang);
-}
-function copyLangCode(btn){
-  var code=btn.parentElement.querySelector('code');
-  navigator.clipboard.writeText(code.textContent).then(function(){
-    btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy'},1500);
-  });
-}
+var spec=null;var apiTags=[];var currentView='';
+fetch('openapi.json?v='+Date.now()).then(function(r){return r.json()}).then(function(d){
+  spec=d;
+  var tagSet={};
+  for(var p in d.paths)for(var m in d.paths[p]){var o=d.paths[p][m];if(o.tags)o.tags.forEach(function(t){tagSet[t]=(tagSet[t]||0)+1})}
+  apiTags=Object.keys(tagSet).sort().map(function(t){return{name:t,count:tagSet[t]}});
+  renderNav('');
+  var h=location.hash.slice(1);
+  if(h&&h.startsWith('api:')){showApiTag(h.slice(4))}
+  else if(h){loadDoc(h)}
+  else{loadDoc('pages/welcome.md')}
+});
 
-function buildHeaderFields(headers){
-  var html='';var keys=Object.keys(headers);
-  if(!keys.length)return'';
-  html+='<div class="tryit-label" style="margin-bottom:4px">Headers</div>';
-  for(var i=0;i<keys.length;i++){
-    html+='<div class="tryit-row"><div class="tryit-field"><label class="tryit-label">'+escHtml(keys[i])+'</label><input class="tryit-inp tryit-hdr-inp" data-hdr="'+escHtml(keys[i])+'" value="'+escHtml(headers[keys[i]])+'"></div></div>';
-  }
-  return html;
-}
-function executeTryIt(btn){
-  var panel=btn.closest('.tryit-body');
-  var url=panel.querySelector('.tryit-url-inp').value;
-  var method=panel.querySelector('input[readonly]').value;
-  var hdrs={};
-  var hdrInps=panel.querySelectorAll('.tryit-hdr-inp');
-  for(var i=0;i<hdrInps.length;i++)hdrs[hdrInps[i].getAttribute('data-hdr')]=hdrInps[i].value;
-  hdrs['Accept']='application/json';
-  var bodyEl=panel.querySelector('.tryit-body-inp');
-  var body=bodyEl?bodyEl.value:null;
-  var respDiv=panel.querySelector('.tryit-response');
-  btn.disabled=true;btn.textContent='Sending...';
-  var t0=Date.now();
-  fetch(url,{method:method,headers:hdrs,body:body&&method!=='GET'?body:undefined})
-  .then(function(r){
-    var elapsed=Date.now()-t0;
-    return r.text().then(function(txt){
-      var ok=r.ok;
-      var pretty=txt;
-      try{pretty=JSON.stringify(JSON.parse(txt),null,2)}catch(e){}
-      respDiv.innerHTML='<div class="tryit-response-header"><span class="tryit-status '+(ok?'tryit-status-ok':'tryit-status-err')+'">'+r.status+' '+r.statusText+'</span><span class="tryit-time">'+elapsed+'ms</span></div><pre class="tryit-output">'+escHtml(pretty)+'</pre>';
-    });
-  }).catch(function(err){
-    respDiv.innerHTML='<div class="tryit-response-header"><span class="tryit-status tryit-status-err">Error</span></div><pre class="tryit-output">'+escHtml(err.message||String(err))+'\n\nNote: CORS may block browser requests to the API.\nUse the CURL command in your terminal instead.</pre>';
-  }).finally(function(){btn.disabled=false;btn.textContent='Send Request'});
-}
-
-/* ── Navigation rendering ── */
-var currentPath='';
-function renderNav(filter){
-  var tree=document.getElementById('nav-tree'),q=(filter||'').toLowerCase(),html='';
-  for(var i=0;i<NAV_DATA.length;i++){
-    var sec=NAV_DATA[i],items=q?sec.items.filter(function(x){return x.t.toLowerCase().indexOf(q)>=0||sec.s.toLowerCase().indexOf(q)>=0}):sec.items;
-    if(!items.length)continue;
+/* ── Navigation ── */
+function renderNav(q){
+  q=(q||'').toLowerCase();
+  var html='';
+  GUIDES.forEach(function(sec){
+    var items=q?sec.items.filter(function(i){return i.t.toLowerCase().indexOf(q)>=0||sec.s.toLowerCase().indexOf(q)>=0}):sec.items;
+    if(!items.length)return;
     html+='<div class="sb-section"><div class="sb-section-title">'+sec.s+'</div>';
-    for(var j=0;j<items.length;j++){
-      var it=items[j];
-      html+='<a class="sb-link depth-'+it.d+'" data-path="'+it.p+'" onclick="loadDoc(\''+it.p.replace(/'/g,"\\'")+'\')">' +it.t+'</a>';
-    }
+    items.forEach(function(i){html+='<a class="sb-link" data-id="'+i.p+'" onclick="loadDoc(\''+i.p+'\')">'+i.t+'</a>'});
+    html+='</div>';
+  });
+  // API Reference
+  var atags=q?apiTags.filter(function(t){return t.name.toLowerCase().indexOf(q)>=0}):apiTags;
+  if(atags.length){
+    html+='<div class="sb-section"><div class="sb-section-title">Trading API Reference</div>';
+    atags.forEach(function(t){
+      html+='<a class="sb-link" data-id="api:'+t.name+'" onclick="showApiTag(\''+t.name.replace(/'/g,"\\'")+'\')">'+t.name+' <span style="color:var(--t4);font-size:10px">('+t.count+')</span></a>';
+    });
     html+='</div>';
   }
-  tree.innerHTML=html;
-  highlightActive();
+  document.getElementById('nav-tree').innerHTML=html;
+  highlightNav();
 }
 function filterNav(q){renderNav(q)}
-function highlightActive(){
-  var els=document.querySelectorAll('.sb-link');
-  for(var i=0;i<els.length;i++) els[i].classList.toggle('active',els[i].getAttribute('data-path')===currentPath);
+function highlightNav(){
+  document.querySelectorAll('.sb-link').forEach(function(el){el.classList.toggle('active',el.getAttribute('data-id')===currentView)});
 }
 
-/* ── Load and render markdown ── */
+/* ── Load markdown page ── */
 function loadDoc(path){
-  if(!path)return;
-  currentPath=path;
-  highlightActive();
-  var content=document.getElementById('content'),doc=document.getElementById('doc'),bc=document.getElementById('breadcrumb');
-  content.classList.add('loading');
-  var parts=path.replace(/README\.md$/,'').replace(/\.md$/,'').split('/').filter(Boolean);
-  bc.innerHTML=parts.map(function(p){return'<span>'+p.replace(/-/g,' ').replace(/_/g,' ')+'</span>'}).join(' / ');
+  currentView=path;highlightNav();
   document.querySelector('.sidebar').classList.remove('open');
+  var doc=document.getElementById('content');
   fetch(path+'?v='+Date.now()).then(function(r){
-    if(!r.ok)throw new Error('Not found');
-    return r.text();
+    if(!r.ok)throw new Error('Not found');return r.text()
   }).then(function(md){
-    md=md.replace(/\[([^\]]+)\]\(([^)]*\.md)\)/g,function(match,text,href){
-      if(href.indexOf('http')===0)return match;
+    md=md.replace(/\[([^\]]+)\]\(([^)]*\.md)\)/g,function(m,text,href){
+      if(href.indexOf('http')===0)return m;
       var base=path.substring(0,path.lastIndexOf('/')+1);
-      var resolved=base+href;
-      var segs=resolved.split('/'),out=[];
+      var resolved=base+href;var segs=resolved.split('/'),out=[];
       for(var i=0;i<segs.length;i++){if(segs[i]==='..')out.pop();else if(segs[i]!=='.')out.push(segs[i])}
       resolved=out.join('/').replace(/\\/g,'');
-      return'<a href="javascript:void(0)" onclick="loadDoc(\''+resolved.replace(/'/g,"\\'")+'\')">' +text+'</a>';
+      return'<a href="javascript:void(0)" onclick="loadDoc(\''+resolved+'\')">'+text+'</a>';
     });
-    md=md.replace(/{% hint style="(\w+)" %}/g,'<blockquote>').replace(/{% endhint %}/g,'</blockquote>');
     md=md.replace(/{%.*?%}/g,'');
-    doc.innerHTML=marked.parse(md);
-    var codes=doc.querySelectorAll('code');
-    for(var i=0;i<codes.length;i++){
-      var t=codes[i].textContent.trim();
-      if(/^(GET|POST|PUT|DELETE|PATCH)$/.test(t)) codes[i].outerHTML='<span class="badge badge-'+t.toLowerCase()+'">'+t+'</span>';
-    }
-    /* Add copy buttons to all code blocks */
-    var pres=doc.querySelectorAll('pre');
-    for(var i=0;i<pres.length;i++){
-      var btn=document.createElement('button');
-      btn.className='copy-btn';
-      btn.textContent='Copy';
-      btn.setAttribute('data-idx',String(i));
-      btn.onclick=function(e){
-        e.stopPropagation();
-        var pre=this.parentElement;
-        var code=pre.querySelector('code');
-        var text=code?code.textContent:pre.textContent;
-        navigator.clipboard.writeText(text).then(function(){
-          e.target.textContent='Copied!';
-          e.target.classList.add('copied');
-          setTimeout(function(){e.target.textContent='Copy';e.target.classList.remove('copied')},1500);
-        });
-      };
-      pres[i].style.position='relative';
-      pres[i].appendChild(btn);
-    }
-    /* Add Try It panels for CURL commands */
-    var curlBlocks=doc.querySelectorAll('pre');
-    for(var i=0;i<curlBlocks.length;i++){
-      var codeEl=curlBlocks[i].querySelector('code');
-      var txt=(codeEl?codeEl.textContent:curlBlocks[i].textContent)||'';
-      txt=txt.trim();
-      if(!/^curl[\s\-]/i.test(txt))continue;
-      var parsed=parseCurl(txt);
-      if(!parsed)continue;
-      var panelId='tryit-'+i+'-'+Date.now();
-      var panel=document.createElement('div');
-      panel.className='tryit';
-      panel.id=panelId;
-      var mc=parsed.method.toLowerCase();
-      panel.innerHTML='<div class="tryit-header" onclick="this.nextElementSibling.classList.toggle(\'open\')">'+
-        '<span class="tryit-method tryit-method-'+mc+'">'+parsed.method+'</span>'+
-        '<span class="tryit-url">'+escHtml(parsed.url)+'</span>'+
-        '<span class="tryit-toggle">Try It</span></div>'+
-        '<div class="tryit-body">'+
-        buildLangTabs(parsed,panelId)+
-        '<div style="border-top:1px solid var(--b1);padding-top:12px;margin-top:4px">'+
-        '<div class="tryit-label" style="margin-bottom:8px">Live Request</div>'+
-        '<div class="tryit-row">'+
-        '<div class="tryit-field" style="flex:2"><label class="tryit-label">URL</label><input class="tryit-inp tryit-url-inp" value="'+escHtml(parsed.url)+'"></div>'+
-        '<div class="tryit-field"><label class="tryit-label">Method</label><input class="tryit-inp" value="'+parsed.method+'" readonly></div>'+
-        '</div>'+
-        buildHeaderFields(parsed.headers)+
-        (parsed.body?'<div class="tryit-field" style="margin-bottom:8px"><label class="tryit-label">Body</label><textarea class="tryit-inp tryit-body-inp" rows="4" style="resize:vertical;width:100%">'+escHtml(parsed.body)+'</textarea></div>':'')+
-        '<button class="tryit-send" onclick="executeTryIt(this)">Send Request</button>'+
-        '<div class="tryit-response"></div>'+
-        '</div></div>';
-      curlBlocks[i].parentNode.insertBefore(panel,curlBlocks[i].nextSibling);
-    }
+    doc.innerHTML=marked.parse(md)+FOOTER;
+    addCopyButtons(doc);
     window.scrollTo(0,0);
-  }).catch(function(){
-    doc.innerHTML='<p style="color:var(--t3)">Could not load <code>'+path+'</code>.</p>';
-  });
-  content.classList.remove('loading');
+  }).catch(function(){doc.innerHTML='<p style="color:var(--t3)">Could not load <code>'+path+'</code>.</p>'});
   history.replaceState(null,'','#'+path);
 }
 
+/* ── API Reference ── */
+function showApiTag(tag){
+  currentView='api:'+tag;highlightNav();
+  document.querySelector('.sidebar').classList.remove('open');
+  var doc=document.getElementById('content');
+  var paths=spec.paths;
+  var defs=spec.definitions||{};
+  var html='<h1>'+tag+'</h1>';
+  var n=0;
+  for(var p in paths){for(var m in paths[p]){
+    var op=paths[p][m];
+    if(!op.tags||op.tags.indexOf(tag)<0)continue;
+    n++;var id='ep'+n;var mc=m.toUpperCase();
+    html+='<div class="endpoint"><div class="ep-head" onclick="document.getElementById(\''+id+'\').classList.toggle(\'open\')">';
+    html+='<span class="ep-badge ep-'+m+'">'+mc+'</span>';
+    html+='<span class="ep-path">'+esc(p)+'</span>';
+    if(op.summary)html+='<span class="ep-sum">'+esc(op.summary)+'</span>';
+    html+='</div><div class="ep-body" id="'+id+'">';
+    if(op.description)html+='<p>'+esc(op.description)+'</p>';
+    // Params
+    var params=op.parameters||[];
+    if(params.length){
+      html+='<h4>Parameters</h4><table class="ep-tbl"><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>';
+      params.forEach(function(pm){
+        var type=pm.type||(pm.schema?(pm.schema.type||refName(pm.schema.$ref)):'');
+        html+='<tr><td><code>'+pm.name+'</code></td><td>'+pm.in+'</td><td>'+type+'</td><td>'+(pm.required?'Yes':'')+'</td><td>'+(pm.description||'')+'</td></tr>';
+      });
+      html+='</tbody></table>';
+    }
+    // Responses
+    if(op.responses){
+      html+='<h4>Responses</h4><table class="ep-tbl"><thead><tr><th>Code</th><th>Description</th><th>Schema</th></tr></thead><tbody>';
+      for(var code in op.responses){
+        var resp=op.responses[code];
+        var schema=resp.schema?refName(resp.schema.$ref)||(resp.schema.type||''):'';
+        html+='<tr><td><code>'+code+'</code></td><td>'+esc(resp.description||'')+'</td><td>'+schema+'</td></tr>';
+      }
+      html+='</tbody></table>';
+    }
+    // Code examples
+    var baseUrl='https://{your-environment}.etnasoft.us/api';
+    html+=buildCodeExamples(mc,baseUrl+p,op);
+    html+='</div></div>';
+  }}
+  html+=FOOTER;
+  doc.innerHTML=html;
+  window.scrollTo(0,0);
+  history.replaceState(null,'','#api:'+tag);
+}
+
+function buildCodeExamples(method,url,op){
+  var hasBody=method==='POST'||method==='PUT';
+  var h='<div class="lang-tabs">';
+  var langs=['cURL','Python','JavaScript','C#','Go'];
+  langs.forEach(function(l,i){h+='<button class="lang-tab'+(i===0?' on':'')+'" onclick="switchLang(this)">'+l+'</button>'});
+  h+='</div>';
+  // cURL
+  var curl='curl -X '+method+' \\\n  --header \'Accept: application/json\' \\\n  --header \'Authorization: Bearer YOUR_TOKEN\' \\\n  --header \'Et-App-Key: YOUR_APP_KEY\'';
+  if(hasBody)curl+=' \\\n  --header \'Content-Type: application/json\' \\\n  -d \'{"key":"value"}\'';
+  curl+=' \\\n  \''+url+'\'';
+  h+='<div class="lang-block on"><div class="ep-curl">'+esc(curl)+'<button class="copy-btn" onclick="copyCode(this)">Copy</button></div></div>';
+  // Python
+  var py='import requests\n\nheaders = {\n    "Accept": "application/json",\n    "Authorization": "Bearer YOUR_TOKEN",\n    "Et-App-Key": "YOUR_APP_KEY"';
+  if(hasBody)py+=',\n    "Content-Type": "application/json"';
+  py+='\n}\n\n';
+  if(hasBody)py+='payload = {"key": "value"}\n\nresponse = requests.'+method.toLowerCase()+'(\n    "'+url+'",\n    headers=headers,\n    json=payload\n)';
+  else py+='response = requests.'+method.toLowerCase()+'(\n    "'+url+'",\n    headers=headers\n)';
+  py+='\nprint(response.status_code)\nprint(response.json())';
+  h+='<div class="lang-block"><div class="ep-curl">'+esc(py)+'<button class="copy-btn" onclick="copyCode(this)">Copy</button></div></div>';
+  // JS
+  var js='const response = await fetch("'+url+'", {\n  method: "'+method+'",\n  headers: {\n    "Accept": "application/json",\n    "Authorization": "Bearer YOUR_TOKEN",\n    "Et-App-Key": "YOUR_APP_KEY"';
+  if(hasBody)js+=',\n    "Content-Type": "application/json"';
+  js+='\n  }';
+  if(hasBody)js+=',\n  body: JSON.stringify({ key: "value" })';
+  js+='\n});\n\nconst data = await response.json();\nconsole.log(data);';
+  h+='<div class="lang-block"><div class="ep-curl">'+esc(js)+'<button class="copy-btn" onclick="copyCode(this)">Copy</button></div></div>';
+  // C#
+  var cs='using var client = new HttpClient();\nvar request = new HttpRequestMessage(HttpMethod.'+method.charAt(0)+method.slice(1).toLowerCase()+', "'+url+'");\nrequest.Headers.Add("Accept", "application/json");\nrequest.Headers.Add("Authorization", "Bearer YOUR_TOKEN");\nrequest.Headers.Add("Et-App-Key", "YOUR_APP_KEY");';
+  if(hasBody)cs+='\nrequest.Content = new StringContent(\n    "{}", System.Text.Encoding.UTF8, "application/json");';
+  cs+='\n\nvar response = await client.SendAsync(request);\nvar body = await response.Content.ReadAsStringAsync();\nConsole.WriteLine($"{response.StatusCode}: {body}");';
+  h+='<div class="lang-block"><div class="ep-curl">'+esc(cs)+'<button class="copy-btn" onclick="copyCode(this)">Copy</button></div></div>';
+  // Go
+  var go='package main\n\nimport (\n\t"fmt"\n\t"io"\n\t"net/http"';
+  if(hasBody)go+='\n\t"strings"';
+  go+='\n)\n\nfunc main() {\n';
+  if(hasBody)go+='\tbody := strings.NewReader(`{"key":"value"}`)\n\treq, _ := http.NewRequest("'+method+'", "'+url+'", body)\n';
+  else go+='\treq, _ := http.NewRequest("'+method+'", "'+url+'", nil)\n';
+  go+='\treq.Header.Set("Accept", "application/json")\n\treq.Header.Set("Authorization", "Bearer YOUR_TOKEN")\n\treq.Header.Set("Et-App-Key", "YOUR_APP_KEY")\n';
+  if(hasBody)go+='\treq.Header.Set("Content-Type", "application/json")\n';
+  go+='\n\tresp, err := http.DefaultClient.Do(req)\n\tif err != nil { panic(err) }\n\tdefer resp.Body.Close()\n\tdata, _ := io.ReadAll(resp.Body)\n\tfmt.Println(string(data))\n}';
+  h+='<div class="lang-block"><div class="ep-curl">'+esc(go)+'<button class="copy-btn" onclick="copyCode(this)">Copy</button></div></div>';
+  return h;
+}
+
+function switchLang(btn){
+  var tabs=btn.parentElement;
+  var blocks=[];var el=tabs.nextElementSibling;
+  while(el&&el.classList.contains('lang-block')){blocks.push(el);el=el.nextElementSibling}
+  var idx=Array.from(tabs.children).indexOf(btn);
+  tabs.querySelectorAll('.lang-tab').forEach(function(t,i){t.classList.toggle('on',i===idx)});
+  blocks.forEach(function(b,i){b.classList.toggle('on',i===idx)});
+}
+
+/* ── Helpers ── */
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function refName(r){return r?(r.split('/').pop()):''}
+function addCopyButtons(container){
+  container.querySelectorAll('pre').forEach(function(pre){
+    if(pre.querySelector('.copy-btn'))return;
+    var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='Copy';
+    btn.onclick=function(e){e.stopPropagation();var code=pre.querySelector('code');
+      navigator.clipboard.writeText((code||pre).textContent).then(function(){btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy'},1500)})};
+    pre.appendChild(btn);
+  });
+}
+function copyCode(btn){var el=btn.parentElement;var code=el.querySelector('code')||el;
+  navigator.clipboard.writeText(code.textContent.replace('Copy','')).then(function(){btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy'},1500)})}
+
+var FOOTER='<div class="footer">&copy; 2026 AutoShares Fintech Solutions, LLC. All rights reserved. AutoShares APIs are provided through AutoShares Fintech Solutions, LLC. Securities offered through Tradepro Securities, Inc., a FINRA/SIPC member broker-dealer. Trading involves risk including the possible loss of principal. Options trading involves substantial risk and is not suitable for all investors. Past performance is not indicative of future results. This site is for informational purposes only and does not constitute an offer to sell or a solicitation to buy any security.</div>';
+
 /* ── Init ── */
-renderNav();
-loadDoc(location.hash?location.hash.slice(1):'README.md');
-window.addEventListener('hashchange',function(){var p=location.hash.slice(1);if(p&&p!==currentPath)loadDoc(p)});
+window.addEventListener('hashchange',function(){
+  var h=location.hash.slice(1);
+  if(h.startsWith('api:'))showApiTag(h.slice(4));
+  else if(h)loadDoc(h);
+});
 </script>
 </body>
 </html>
