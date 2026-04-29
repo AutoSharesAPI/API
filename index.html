@@ -133,8 +133,9 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
   .content{margin-left:0;margin-top:64px;padding:24px 16px}
 }
 /* ── AI Helper ── */
-.ai-fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;background:var(--ac);color:#fff;border:0;border-radius:50%;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,201,167,.35);z-index:200;transition:transform .15s,box-shadow .15s}
-.ai-fab:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(0,201,167,.45)}
+.ai-fab{position:fixed;bottom:24px;right:24px;height:44px;background:var(--ac);color:#fff;border:0;border-radius:22px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;display:flex;align-items:center;gap:8px;padding:0 20px 0 16px;box-shadow:0 4px 16px rgba(0,201,167,.35);z-index:200;transition:transform .15s,box-shadow .15s}
+.ai-fab:hover{transform:scale(1.03);box-shadow:0 6px 24px rgba(0,201,167,.45)}
+.ai-fab svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
 .ai-panel{position:fixed;bottom:88px;right:24px;width:380px;max-height:520px;background:var(--bg);border:1px solid var(--b1);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:200;display:none;flex-direction:column;overflow:hidden}
 [data-theme="dark"] .ai-panel{box-shadow:0 8px 32px rgba(0,0,0,.5)}
 .ai-panel.open{display:flex}
@@ -165,9 +166,8 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
 <header class="header">
   <div class="hdr-brand"><h1><span>AutoShares</span> Docs</h1></div>
   <nav class="hdr-nav">
-    <a class="hdr-link" href="https://autoshares.com" target="_blank">AutoShares Brokerage</a>
     <a class="hdr-link" href="https://autoshares.com/contact" target="_blank">Contact</a>
-    <a class="hdr-cta" href="https://demo.autoshares.com" target="_blank">Get API Access</a>
+    <a class="hdr-cta" href="javascript:void(0)" onclick="loadDoc('pages/signup.md')">Get Started</a>
     <button class="theme-btn" onclick="toggleTheme()" id="theme-btn"></button>
   </nav>
 </header>
@@ -358,6 +358,75 @@ var FOOTER='<div class="footer">&copy; 2026 AutoShares Fintech Solutions, LLC. A
 
 window.addEventListener('hashchange',function(){var h=location.hash.slice(1);if(h.startsWith('api:'))showApiTag(h.slice(4));else if(h)loadDoc(h)});
 
+/* ── Signup Form Handler ── */
+window.handleSignup=function(e){
+  e.preventDefault();
+  var btn=document.getElementById('su-submit');
+  var status=document.getElementById('su-status');
+  var email=document.getElementById('su-email').value.trim();
+  var pass=document.getElementById('su-pass').value;
+  var first=document.getElementById('su-first').value.trim();
+  var last=document.getElementById('su-last').value.trim();
+  var company=document.getElementById('su-company').value.trim();
+  var usecase=document.getElementById('su-usecase').value;
+  var volume=document.getElementById('su-volume').value;
+
+  var apis=[];
+  if(document.getElementById('su-api-trading').checked)apis.push('Trading');
+  if(document.getElementById('su-api-market').checked)apis.push('Market Data');
+  if(document.getElementById('su-api-options').checked)apis.push('Options');
+  if(document.getElementById('su-api-ach').checked)apis.push('ACH/Transfers');
+  if(document.getElementById('su-api-backoffice').checked)apis.push('Back Office');
+
+  btn.disabled=true;btn.textContent='Creating account...';
+  status.style.display='none';
+
+  // Register on demo.autoshares.com via the ETNA registration API
+  fetch('https://demo.autoshares.com/api/registration',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({
+      FirstName:first,
+      LastName:last,
+      EmailAddress:email,
+      Login:email,
+      Password:pass,
+      Company:company||undefined
+    })
+  }).then(function(r){return r.json().then(function(d){return{ok:r.ok,status:r.status,data:d}})})
+  .then(function(res){
+    if(res.ok||res.status===200||res.status===201){
+      status.style.display='block';
+      status.style.background='var(--ac-dim)';
+      status.style.border='1px solid var(--ac)';
+      status.style.color='var(--t1)';
+      status.innerHTML='<strong>Account created!</strong><br><br>'+
+        'Your sandbox credentials:<br>'+
+        '<strong>Username:</strong> '+esc(email)+'<br>'+
+        '<strong>Environment:</strong> demo.autoshares.com<br><br>'+
+        'Check your email for the Et-App-Key. You can also <a href="https://demo.autoshares.com" target="_blank" style="color:var(--ac);font-weight:600">log in to the web terminal</a> to start exploring.<br><br>'+
+        '<a href="javascript:void(0)" onclick="loadDoc(\'pages/quickstart.md\')" style="color:var(--ac);font-weight:600">Next: Quick Start Guide &rarr;</a>';
+      btn.textContent='Account Created';
+    } else {
+      throw new Error(res.data.Message||res.data.error||res.data.ErrorDescription||JSON.stringify(res.data));
+    }
+  }).catch(function(err){
+    // If the direct API call fails (CORS), fall back to opening demo.autoshares.com
+    status.style.display='block';
+    status.style.background='var(--bg2)';
+    status.style.border='1px solid var(--b1)';
+    status.style.color='var(--t1)';
+    status.innerHTML='<strong>Almost there!</strong><br><br>'+
+      'Complete your registration on the AutoShares demo platform:<br><br>'+
+      '<a href="https://demo.autoshares.com" target="_blank" style="display:inline-block;padding:10px 20px;background:var(--ac);color:#fff;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px">Complete Registration on demo.autoshares.com &rarr;</a><br><br>'+
+      '<span style="font-size:12px;color:var(--t4)">Use the same email (<strong>'+esc(email)+'</strong>) and password you entered above.</span><br><br>'+
+      'We\'ve noted your details — our team will follow up with your Et-App-Key and environment URL.';
+    btn.textContent='Create API Account';
+    btn.disabled=false;
+  });
+  return false;
+};
+
 /* ── AI Assistant (Claude-powered) ── */
 var AI_URL='https://ai-docs.globalmarketholdings.workers.dev'; // Cloudflare Worker proxy
 var aiOpen=false;
@@ -410,7 +479,7 @@ function aiKeydown(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();askAI(
 </script>
 
 <!-- AI Helper -->
-<button class="ai-fab" onclick="toggleAI()" title="Ask AI about this API">&#9883;</button>
+<button class="ai-fab" onclick="toggleAI()"><svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1.27A7 7 0 0 1 14 23h-4a7 7 0 0 1-6.73-4H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z" stroke-linecap="round"/><circle cx="9" cy="14" r="1" fill="currentColor"/><circle cx="15" cy="14" r="1" fill="currentColor"/></svg>Ask AI</button>
 <div class="ai-panel" id="ai-panel">
   <div class="ai-head">
     <div><h3>API Assistant</h3><span>Search endpoints, guides, and examples</span></div>
