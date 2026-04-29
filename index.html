@@ -435,6 +435,9 @@ function loadDoc(path){
     buildOnThisPage(doc);
     // Inject Try It buttons for guide pages with matching endpoints
     injectGuideTryIt(doc, path);
+    // Inject API overview cards
+    var overviewEl=doc.querySelector('#api-overview-cards');
+    if(overviewEl)injectOverviewCards(overviewEl);
     // Inject signup form if placeholder exists
     var signupEl=doc.querySelector('#signup-form-container');
     if(signupEl)injectSignupForm(signupEl);
@@ -684,6 +687,40 @@ function buildPrevNext(currentPath){
   }
   html+='</div>';
   return html;
+}
+
+/* ── API Overview Cards ── */
+function injectOverviewCards(el){
+  var cards=[
+    {icon:'\uD83D\uDD10',title:'Authentication',desc:'Get tokens, 2FA flow, session management',action:'page',target:'pages/authentication.md'},
+    {icon:'\uD83D\uDC64',title:'User Management',desc:'Create users, get user info, manage settings',action:'tag',target:'Users'},
+    {icon:'\uD83C\uDFE6',title:'Trading Accounts',desc:'Account info, balances, buying power, history',action:'tag',target:'UserAccounts'},
+    {icon:'\uD83D\uDCB3',title:'Account Funding',desc:'ACH relationships, deposits, withdrawals, wires',action:'tag',target:'AchRelationships'},
+    {icon:'\uD83D\uDCC8',title:'Orders & Trading',desc:'Place, modify, cancel orders. Market, limit, stop, OTOCO brackets',action:'tag',target:'Orders'},
+    {icon:'\uD83D\uDCCA',title:'Positions',desc:'Current positions, P&L, market value by security type',action:'tag',target:'Positions'},
+    {icon:'\uD83D\uDD0D',title:'Securities',desc:'Look up equities, options, option chains, expirations',action:'tag',target:'Securities'},
+    {icon:'\u2B50',title:'Watchlists',desc:'Create, manage, add/remove securities from watchlists',action:'tag',target:'Watchlists'},
+    {icon:'\uD83D\uDD14',title:'Price Alerts',desc:'Create, modify, delete price alert triggers',action:'tag',target:'PriceAlerts'},
+    {icon:'\uD83D\uDCC9',title:'Historical Data',desc:'OHLCV candles, indicators, comparison charts, Excel export',action:'tag',target:'HistoricalTradeData'},
+    {icon:'\u26A1',title:'Streaming Data',desc:'Real-time quotes, orders, positions via WebSocket',action:'page',target:'pages/streaming-data.md'},
+    {icon:'\uD83D\uDCF0',title:'News',desc:'Company news and corporate actions (earnings, dividends, splits)',action:'tag',target:'News'},
+    {icon:'\uD83D\uDCCB',title:'Transactions',desc:'Trade ledger, dividends, fees, journal entries',action:'tag',target:'Transactions'},
+    {icon:'\uD83C\uDFAF',title:'IPO',desc:'Active offerings, subscribe and unsubscribe',action:'tag',target:'Ipo'},
+    {icon:'\uD83D\uDCBC',title:'Mutual Funds',desc:'Buy, sell, exchange, liquidate mutual fund orders',action:'tag',target:'MutualFunds'},
+    {icon:'\u2705',title:'Agreements',desc:'Market data agreements, platform terms',action:'tag',target:'Agreements'},
+    {icon:'\uD83D\uDCBB',title:'Code Samples',desc:'Python, JavaScript, cURL examples for common workflows',action:'page',target:'pages/code-samples.md'},
+    {icon:'\uD83D\uDCD6',title:'Terms & Definitions',desc:'API terminology, enums, field reference',action:'page',target:'pages/changelog.md'},
+  ];
+  var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:20px 0 32px">';
+  cards.forEach(function(c){
+    var onclick=c.action==='tag'?'showApiTag(\''+c.target+'\')':'loadDoc(\''+c.target+'\')';
+    html+='<a onclick="'+onclick+'" style="display:flex;align-items:flex-start;gap:12px;padding:16px 18px;background:var(--bg1);border:1px solid var(--b1);border-radius:10px;cursor:pointer;text-decoration:none;transition:all .12s" onmouseover="this.style.borderColor=\'var(--ac)\';this.style.background=\'var(--ac-dim)\'" onmouseout="this.style.borderColor=\'var(--b1)\';this.style.background=\'var(--bg1)\'">';
+    html+='<span style="font-size:24px;flex-shrink:0;margin-top:2px">'+c.icon+'</span>';
+    html+='<div><span style="display:block;font-size:15px;font-weight:600;color:var(--t1);margin-bottom:3px">'+c.title+'</span>';
+    html+='<span style="font-size:13px;color:var(--t3);line-height:1.5">'+c.desc+'</span></div></a>';
+  });
+  html+='</div>';
+  el.innerHTML=html;
 }
 
 /* ── Inject Try It on guide pages ── */

@@ -1,12 +1,38 @@
+# API Overview
 
-# Working with the APIs
+The AutoShares Trading API is organized by resource categories. Each section covers a different set of functionality — from authentication to order placement to streaming market data.
 
-### Introduction
+Each endpoint is documented with parameters, response schemas, code examples in 5 languages, and an interactive Try It panel.
 
-The APIs are designed to perform operations like placing orders and trading, streaming buying power and account values, poaitions, charts, price alerts, and transactions. 
+<div id="api-overview-cards"></div>
 
-The documentation for the APIs are structured by categories, each representing a different set of functionality. The first section — **Authentication** — covers the process of generating authentication tokens that must be provided in the header of all other requests. All subsequent sections cover different aspects of AutoSharesthe APIs, ranging from order placement to working with self-directed trading accounts.
+## API Architecture
 
-Each API request is described on two pages; the first page introduces you to the API request and explains how to properly use the request parameters and the typical mistakes to avoid; the second page is strictly technical, outlining all of the header and body parameters along with their types, the range of request status codes, as well as all possible responses:
+All API requests follow this pattern:
 
+```
+{METHOD} https://{your-environment}.etnasoft.us/api/v1.0/{resource}
+```
 
+**Required headers on every request:**
+
+| Header | Description |
+|--------|-------------|
+| `Et-App-Key` | Your application key (provided during onboarding) |
+| `Authorization` | `Bearer {token}` from the `/token` endpoint |
+| `Accept` | `application/json` |
+
+## Rate Limits
+
+| Category | Limit | Window |
+|----------|-------|--------|
+| Authentication | 10 requests | Per minute |
+| Orders | 50 requests | Per minute |
+| Queries (positions, orders, securities) | 120 requests | Per minute |
+| Securities lookup | 200 requests | Per minute |
+
+## Need Help?
+
+- Use the **Ask AI** button in the header for instant answers
+- Check the **Error Codes** guide for troubleshooting
+- Contact **support@autoshares.com** for integration support
