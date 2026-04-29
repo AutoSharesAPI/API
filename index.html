@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -333,7 +333,7 @@ function loadApiSettingsUI(){
 }
 
 /* ── Theme ── */
-function getTheme(){return localStorage.getItem('as-theme')||'dark'}
+function getTheme(){return localStorage.getItem('as-theme')||'light'}
 function applyTheme(t){document.documentElement.setAttribute('data-theme',t);var btn=document.getElementById('theme-btn');if(btn)btn.textContent=t==='dark'?'\u2600':'\u263D';localStorage.setItem('as-theme',t)}
 function toggleSettings(){var el=document.getElementById('api-settings');var btn=document.getElementById('gear-btn');var isOpen=el.classList.toggle('open');btn.classList.toggle('active',isOpen)}
 function toggleTheme(){applyTheme(getTheme()==='dark'?'light':'dark')}
