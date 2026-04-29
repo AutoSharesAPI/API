@@ -267,6 +267,8 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
   <nav class="hdr-nav">
     <button class="hdr-ai" onclick="toggleAI()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4m-7.07-2.93l2.83-2.83m8.48-8.48l2.83-2.83M2 12h4m12 0h4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83"/></svg>Ask AI</button>
     <a class="hdr-cta" href="javascript:void(0)" onclick="loadDoc('pages/signup.md')">Get API Access</a>
+    <button class="hdr-icon" id="gear-btn" onclick="toggleSettings()" title="API Settings">&#9881;</button>
+    <button class="hdr-icon" onclick="toggleTheme()" id="theme-btn" title="Toggle theme"></button>
   </nav>
 </header>
 
@@ -274,10 +276,6 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
 
 <!-- Sidebar -->
 <nav class="sidebar" id="sidebar">
-  <div style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-bottom:1px solid var(--b1)">
-    <button class="hdr-icon" id="gear-btn" onclick="toggleSettings()" title="API Settings" style="width:30px;height:30px;font-size:14px">&#9881;</button>
-    <button class="hdr-icon" onclick="toggleTheme()" id="theme-btn" title="Toggle theme" style="width:30px;height:30px;font-size:13px"></button>
-  </div>
   <div id="nav-tree"></div>
 
 </nav>
