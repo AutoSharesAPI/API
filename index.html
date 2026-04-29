@@ -337,7 +337,8 @@ var GUIDES=[
 {t:'Webhooks',p:'pages/webhooks.md'}
 ]},
 {s:'SDKs & Tools',items:[
-{t:'SDKs & Libraries',p:'pages/sdks.md'},{t:'User Guide',p:'pages/user-guide.md'},{t:'Web Terminal',p:'pages/web-terminal.md'}
+{t:'SDKs & Libraries',p:'pages/sdks.md'},{t:'User Guide',p:'pages/user-guide.md'},{t:'Web Terminal',p:'pages/web-terminal.md'},
+{t:'MCP Server (AI)',p:'pages/mcp.md'}
 ]},
 {s:'Resources',items:[{t:'Changelog',p:'pages/changelog.md'}]}
 ];
@@ -674,24 +675,30 @@ function openTryIt(method,path){
 function closeTryIt(){document.getElementById('tryit-panel').classList.remove('open')}
 
 window.sendTryItPanel=function(tid,method){
-  var url=document.getElementById(tid+'-url').value;
-  var token=document.getElementById(tid+'-token').value;
-  var appkey=document.getElementById(tid+'-appkey').value;
+  var urlEl=document.getElementById(tid+'-url');
+  var tokenEl=document.getElementById(tid+'-token');
+  var appkeyEl=document.getElementById(tid+'-appkey');
   var bodyEl=document.getElementById(tid+'-body');
-  var body=bodyEl?bodyEl.value:null;
   var result=document.getElementById(tid+'-result');
-  // Apply path and query params
-  var paramEls=document.querySelectorAll('#'+tid+'-url').closest('.ep-tryit-body')?.querySelectorAll('.ep-tryit-param')||[];
-  document.querySelectorAll('.ep-tryit-param').forEach(function(el){
+  if(!urlEl||!result)return;
+  var url=urlEl.value;
+  var token=tokenEl?tokenEl.value:'';
+  var appkey=appkeyEl?appkeyEl.value:'';
+  var body=bodyEl?bodyEl.value:null;
+  // Apply path and query params from the tryit panel
+  var panel=document.getElementById('tryit-body');
+  if(panel){panel.querySelectorAll('.ep-tryit-param').forEach(function(el){
     var name=el.getAttribute('data-name');
-    var inp=el.getAttribute('data-in');
+    var pIn=el.getAttribute('data-in');
     var val=el.value;
     if(!val)return;
-    if(inp==='path')url=url.replace('{'+name+'}',encodeURIComponent(val));
-    if(inp==='query'){url+=(url.indexOf('?')>=0?'&':'?')+name+'='+encodeURIComponent(val)}
-  });
+    if(pIn==='path')url=url.replace('{'+name+'}',encodeURIComponent(val));
+    if(pIn==='query'){url+=(url.indexOf('?')>=0?'&':'?')+name+'='+encodeURIComponent(val)}
+  })}
   result.innerHTML='<div class="ep-tryit-status"><span style="color:var(--t4)">Sending...</span></div>';
-  var btn=result.previousElementSibling;btn.disabled=true;
+  // Find and disable send button
+  var sendBtn=panel?panel.querySelector('.ep-tryit-send'):null;
+  if(sendBtn)sendBtn.disabled=true;
   var headers={'Accept':'application/json'};
   if(token)headers['Authorization']='Bearer '+token;
   if(appkey)headers['Et-App-Key']=appkey;
@@ -705,7 +712,7 @@ window.sendTryItPanel=function(tid,method){
     })
   }).catch(function(err){
     result.innerHTML='<div class="ep-tryit-status"><span style="font-weight:700;color:var(--ep-del)">Error</span></div><div class="ep-tryit-result" style="color:var(--ep-del)">'+esc(err.message)+'\n\nCORS may block browser requests.\nUse the cURL command instead.</div>';
-  }).finally(function(){btn.disabled=false});
+  }).finally(function(){if(sendBtn)sendBtn.disabled=false});
 };
 
 function switchLang(btn){
