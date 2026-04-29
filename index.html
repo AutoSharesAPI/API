@@ -33,8 +33,9 @@ body{background:var(--bg);color:var(--t1);font-family:-apple-system,BlinkMacSyst
 /* ── Header ── */
 .header{position:fixed;top:0;left:0;right:0;height:72px;background:var(--bg);border-bottom:1px solid var(--b1);z-index:100;display:flex;align-items:center;padding:0 24px;gap:16px}
 .hdr-brand{display:flex;align-items:center;gap:10px;min-width:200px;flex-shrink:0}
-.hdr-brand h1{font-size:17px;font-weight:800;color:var(--t1);letter-spacing:-.01em;white-space:nowrap}
+.hdr-brand h1{font-size:16px;font-weight:800;color:var(--t1);letter-spacing:.02em;white-space:nowrap;display:flex;align-items:center;gap:8px}
 .hdr-brand h1 span{color:var(--ac)}
+.hdr-logo{width:22px;height:22px;stroke:var(--ac);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .hdr-link{font-size:13px;font-weight:600;color:var(--t3);text-decoration:none;transition:color .12s;white-space:nowrap}
 .hdr-link:hover{color:var(--t1)}
 .hdr-search{max-width:480px;flex:1;position:relative}
@@ -267,7 +268,7 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
 
 <!-- Header -->
 <header class="header">
-  <div class="hdr-brand"><h1><span>AUTOSHARES</span> API Documentation</h1></div>
+  <div class="hdr-brand"><h1><svg class="hdr-logo" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg><span>AUTOSHARES</span> API DOCUMENTATION</h1></div>
   <div class="hdr-search">
     <svg class="hdr-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input type="text" placeholder="Search docs, endpoints, guides..." oninput="headerSearch(this.value)" onkeydown="if(event.key==='Escape')this.value=''" id="hdr-search-input">
