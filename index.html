@@ -899,32 +899,53 @@ window.handleBOAccess=function(e){
 
 /* ── API Overview Cards ── */
 function injectOverviewCards(el){
+  // SVG line icons (monochrome, professional)
+  var icons={
+    auth:'<path d="M12 2a5 5 0 015 5v3H7V7a5 5 0 015-5z"/><rect x="3" y="10" width="18" height="12" rx="2"/><circle cx="12" cy="16" r="1"/>',
+    users:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>',
+    accounts:'<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>',
+    funding:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',
+    orders:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+    positions:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+    securities:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+    watchlists:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+    alerts:'<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>',
+    history:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+    streaming:'<polygon points="5 3 19 12 5 21 5 3"/>',
+    news:'<path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2zm0 0a2 2 0 01-2-2v-9c0-1.1.9-2 2-2h2"/><line x1="10" y1="6" x2="18" y2="6"/><line x1="10" y1="10" x2="18" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/>',
+    transactions:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+    ipo:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>',
+    mutualfunds:'<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>',
+    agreements:'<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>',
+    code:'<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+    definitions:'<path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>'
+  };
   var cards=[
-    {icon:'\uD83D\uDD10',title:'Authentication',desc:'Get tokens, 2FA flow, session management',action:'page',target:'pages/authentication.md'},
-    {icon:'\uD83D\uDC64',title:'User Management',desc:'Create users, get user info, manage settings',action:'tag',target:'Users'},
-    {icon:'\uD83C\uDFE6',title:'Trading Accounts',desc:'Account info, balances, buying power, history',action:'tag',target:'UserAccounts'},
-    {icon:'\uD83D\uDCB3',title:'Account Funding',desc:'ACH relationships, deposits, withdrawals, wires',action:'tag',target:'AchRelationships'},
-    {icon:'\uD83D\uDCC8',title:'Orders & Trading',desc:'Place, modify, cancel orders. Market, limit, stop, OTOCO brackets',action:'tag',target:'Orders'},
-    {icon:'\uD83D\uDCCA',title:'Positions',desc:'Current positions, P&L, market value by security type',action:'tag',target:'Positions'},
-    {icon:'\uD83D\uDD0D',title:'Securities',desc:'Look up equities, options, option chains, expirations',action:'tag',target:'Securities'},
-    {icon:'\u2B50',title:'Watchlists',desc:'Create, manage, add/remove securities from watchlists',action:'tag',target:'Watchlists'},
-    {icon:'\uD83D\uDD14',title:'Price Alerts',desc:'Create, modify, delete price alert triggers',action:'tag',target:'PriceAlerts'},
-    {icon:'\uD83D\uDCC9',title:'Historical Data',desc:'OHLCV candles, indicators, comparison charts, Excel export',action:'tag',target:'HistoricalTradeData'},
-    {icon:'\u26A1',title:'Streaming Data',desc:'Real-time quotes, orders, positions via WebSocket',action:'page',target:'pages/streaming-data.md'},
-    {icon:'\uD83D\uDCF0',title:'News',desc:'Company news and corporate actions (earnings, dividends, splits)',action:'tag',target:'News'},
-    {icon:'\uD83D\uDCCB',title:'Transactions',desc:'Trade ledger, dividends, fees, journal entries',action:'tag',target:'Transactions'},
-    {icon:'\uD83C\uDFAF',title:'IPO',desc:'Active offerings, subscribe and unsubscribe',action:'tag',target:'Ipo'},
-    {icon:'\uD83D\uDCBC',title:'Mutual Funds',desc:'Buy, sell, exchange, liquidate mutual fund orders',action:'tag',target:'MutualFunds'},
-    {icon:'\u2705',title:'Agreements',desc:'Market data agreements, platform terms',action:'tag',target:'Agreements'},
-    {icon:'\uD83D\uDCBB',title:'Code Samples',desc:'Python, JavaScript, cURL examples for common workflows',action:'page',target:'pages/code-samples.md'},
-    {icon:'\uD83D\uDCD6',title:'Terms & Definitions',desc:'API terminology, enums, field reference',action:'page',target:'pages/changelog.md'},
+    {icon:'auth',title:'Authentication',desc:'Get tokens, 2FA flow, session management',action:'page',target:'pages/authentication.md'},
+    {icon:'users',title:'User Management',desc:'Create users, get user info, manage settings',action:'tag',target:'Users'},
+    {icon:'accounts',title:'Trading Accounts',desc:'Account info, balances, buying power, history',action:'tag',target:'UserAccounts'},
+    {icon:'funding',title:'Account Funding',desc:'ACH relationships, deposits, withdrawals, wires',action:'tag',target:'AchRelationships'},
+    {icon:'orders',title:'Orders & Trading',desc:'Place, modify, cancel orders. Market, limit, stop, OTOCO brackets',action:'tag',target:'Orders'},
+    {icon:'positions',title:'Positions',desc:'Current positions, P&L, market value by security type',action:'tag',target:'Positions'},
+    {icon:'securities',title:'Securities',desc:'Look up equities, options, option chains, expirations',action:'tag',target:'Securities'},
+    {icon:'watchlists',title:'Watchlists',desc:'Create, manage, add/remove securities from watchlists',action:'tag',target:'Watchlists'},
+    {icon:'alerts',title:'Price Alerts',desc:'Create, modify, delete price alert triggers',action:'tag',target:'PriceAlerts'},
+    {icon:'history',title:'Historical Data',desc:'OHLCV candles, indicators, comparison charts, Excel export',action:'tag',target:'HistoricalTradeData'},
+    {icon:'streaming',title:'Streaming Data',desc:'Real-time quotes, orders, positions via WebSocket',action:'page',target:'pages/streaming-data.md'},
+    {icon:'news',title:'News',desc:'Company news and corporate actions (earnings, dividends, splits)',action:'tag',target:'News'},
+    {icon:'transactions',title:'Transactions',desc:'Trade ledger, dividends, fees, journal entries',action:'tag',target:'Transactions'},
+    {icon:'ipo',title:'IPO',desc:'Active offerings, subscribe and unsubscribe',action:'tag',target:'Ipo'},
+    {icon:'mutualfunds',title:'Mutual Funds',desc:'Buy, sell, exchange, liquidate mutual fund orders',action:'tag',target:'MutualFunds'},
+    {icon:'agreements',title:'Agreements',desc:'Market data agreements, platform terms',action:'tag',target:'Agreements'},
+    {icon:'code',title:'Code Samples',desc:'Python, JavaScript, cURL examples for common workflows',action:'page',target:'pages/code-samples.md'},
+    {icon:'definitions',title:'Terms & Definitions',desc:'API terminology, enums, field reference',action:'page',target:'pages/changelog.md'},
   ];
-  var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:20px 0 32px">';
+  var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin:24px 0 36px">';
   cards.forEach(function(c){
     var onclick=c.action==='tag'?'showApiTag(\''+c.target+'\')':'loadDoc(\''+c.target+'\')';
-    html+='<a onclick="'+onclick+'" style="display:flex;align-items:flex-start;gap:12px;padding:16px 18px;background:var(--bg1);border:1px solid var(--b1);border-radius:10px;cursor:pointer;text-decoration:none;transition:all .12s" onmouseover="this.style.borderColor=\'var(--ac)\';this.style.background=\'var(--ac-dim)\'" onmouseout="this.style.borderColor=\'var(--b1)\';this.style.background=\'var(--bg1)\'">';
-    html+='<span style="font-size:24px;flex-shrink:0;margin-top:2px">'+c.icon+'</span>';
-    html+='<div><span style="display:block;font-size:15px;font-weight:600;color:var(--t1);margin-bottom:3px">'+c.title+'</span>';
+    html+='<a onclick="'+onclick+'" style="display:flex;align-items:flex-start;gap:14px;padding:18px 20px;background:var(--bg1);border:1px solid var(--b1);border-radius:10px;cursor:pointer;text-decoration:none;transition:all .15s" onmouseover="this.style.borderColor=\'var(--ac)\';this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.06)\'" onmouseout="this.style.borderColor=\'var(--b1)\';this.style.boxShadow=\'none\'">';
+    html+='<div style="width:36px;height:36px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--bg2);border-radius:8px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'+icons[c.icon]+'</svg></div>';
+    html+='<div><span style="display:block;font-size:15px;font-weight:600;color:var(--t1);margin-bottom:4px">'+c.title+'</span>';
     html+='<span style="font-size:13px;color:var(--t3);line-height:1.5">'+c.desc+'</span></div></a>';
   });
   html+='</div>';
