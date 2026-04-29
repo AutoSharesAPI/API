@@ -448,7 +448,7 @@ function showSingleEndpoint(tag,method,path){
 /* ── Nav ── */
 function renderNav(q){
   q=(q||'').toLowerCase();var html='';
-  GUIDES.forEach(function(sec){
+  GUIDES.filter(function(sec){return sec.s!=='Resources'}).forEach(function(sec){
     var items=q?sec.items.filter(function(i){return i.t.toLowerCase().indexOf(q)>=0||sec.s.toLowerCase().indexOf(q)>=0}):sec.items;
     if(!items.length)return;
     html+='<div class="sb-section"><div class="sb-section-title">'+sec.s+'</div>';
@@ -478,6 +478,14 @@ function renderNav(q){
     });
     html+='</div>';
   }
+  // Resources section after API Reference
+  GUIDES.filter(function(sec){return sec.s==='Resources'}).forEach(function(sec){
+    var items=q?sec.items.filter(function(i){return i.t.toLowerCase().indexOf(q)>=0}):sec.items;
+    if(!items.length)return;
+    html+='<div class="sb-section"><div class="sb-section-title">'+sec.s+'</div>';
+    items.forEach(function(i){html+='<a class="sb-link" data-id="'+i.p+'" onclick="loadDoc(\''+i.p+'\')">'+i.t+'</a>'});
+    html+='</div>';
+  });
   document.getElementById('nav-tree').innerHTML=html;highlightNav();
 }
 function filterNav(q){renderNav(q)}
