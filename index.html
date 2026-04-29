@@ -433,6 +433,8 @@ function loadDoc(path){
     doc.innerHTML=marked.parse(md)+buildPrevNext(path)+FOOTER;
     addCopyBtns(doc);
     buildOnThisPage(doc);
+    // Inject Try It buttons for guide pages with matching endpoints
+    injectGuideTryIt(doc, path);
     // Inject signup form if placeholder exists
     var signupEl=doc.querySelector('#signup-form-container');
     if(signupEl)injectSignupForm(signupEl);
@@ -682,6 +684,28 @@ function buildPrevNext(currentPath){
   }
   html+='</div>';
   return html;
+}
+
+/* ── Inject Try It on guide pages ── */
+var GUIDE_ENDPOINTS={
+  'pages/place-order.md':{tag:'Orders',method:'POST',path:'/v{version}/accounts/{accountId}/orders',label:'Place an order'},
+  'pages/streaming-data.md':{tag:'Streamer',method:'GET',path:'/v{version}/streamers',label:'Get streamers data'},
+  'pages/authentication.md':{tag:'Login',method:'POST',path:'/token',label:'Get token'},
+  'pages/quickstart.md':{tag:'Orders',method:'POST',path:'/v{version}/accounts/{accountId}/orders',label:'Place an order'},
+};
+
+function injectGuideTryIt(container, path){
+  var mapping=GUIDE_ENDPOINTS[path];
+  if(!mapping||!spec)return;
+  // Find all placeholder divs or insert at top
+  var placeholder=container.querySelector('#place-order-tryit,#guide-tryit');
+  var target=placeholder||container.querySelector('h2');
+  if(!target)return;
+  var div=document.createElement('div');
+  div.style.cssText='margin:16px 0 24px;padding:16px 20px;background:var(--bg1);border:1px solid var(--b1);border-radius:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px';
+  div.innerHTML='<div><span style="font-size:14px;font-weight:600;color:var(--t1)">Want to test this endpoint live?</span><br><span style="font-size:13px;color:var(--t3)"><span class="ep-badge ep-'+mapping.method.toLowerCase()+'" style="font-size:10px;padding:2px 6px;margin-right:4px">'+mapping.method+'</span>'+esc(mapping.path)+'</span></div><a onclick="showSingleEndpoint(\''+mapping.tag+'\',\''+mapping.method+'\',\''+mapping.path.replace(/'/g,"\\'")+'\')" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--ac);color:#fff;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;transition:filter .12s" onmouseover="this.style.filter=\'brightness(1.1)\'" onmouseout="this.style.filter=\'none\'">Try It \u2192</a>';
+  if(placeholder){placeholder.replaceWith(div)}
+  else{target.parentNode.insertBefore(div,target)}
 }
 
 function injectSignupForm(el){
