@@ -143,6 +143,3 @@ curl -X GET \
 
 When you're ready to go live with real trading, contact **support@autoshares.com** to upgrade to production credentials.
 
----
-
-&copy; 2026 AutoShares Fintech Solutions, LLC. All rights reserved. AutoShares APIs are provided through AutoShares Fintech Solutions, LLC. Securities offered through Tradepro Securities, Inc., a FINRA/SIPC member broker-dealer. Trading involves risk including the possible loss of principal. Options trading involves substantial risk and is not suitable for all investors. Past performance is not indicative of future results. This site is for informational purposes only and does not constitute an offer to sell or a solicitation to buy any security.

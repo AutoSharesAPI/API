@@ -87,6 +87,3 @@ document.head.appendChild(style);
 | Partnership Inquiry | 1-2 business days |
 | Bug Reports | Within 24 hours |
 
----
-
-&copy; 2026 AutoShares Fintech Solutions, LLC. All rights reserved.
