@@ -134,9 +134,9 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
   .content{margin-left:0;margin-top:64px;padding:24px 16px}
 }
 /* ── AI Helper ── */
-.ai-fab{position:fixed;top:72px;right:24px;height:38px;background:var(--ac);color:#fff;border:0;border-radius:20px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;display:flex;align-items:center;gap:6px;padding:0 16px 0 12px;box-shadow:0 2px 8px rgba(0,201,167,.25);z-index:150;transition:transform .15s,box-shadow .15s}
-.ai-fab:hover{transform:scale(1.03);box-shadow:0 4px 16px rgba(0,201,167,.35)}
-.ai-fab svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+.ai-fab{position:fixed;bottom:24px;right:24px;height:44px;background:var(--ac);color:#fff;border:0;border-radius:22px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;display:flex;align-items:center;gap:8px;padding:0 20px 0 16px;box-shadow:0 4px 16px rgba(0,201,167,.35);z-index:200;transition:transform .15s,box-shadow .15s}
+.ai-fab:hover{transform:scale(1.03);box-shadow:0 6px 24px rgba(0,201,167,.45)}
+.ai-fab svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
 .ai-panel{position:fixed;top:64px;right:0;width:400px;bottom:0;background:var(--bg);border-left:1px solid var(--b1);box-shadow:-4px 0 24px rgba(0,0,0,.1);z-index:150;display:none}
 [data-theme="dark"] .ai-panel{box-shadow:-4px 0 24px rgba(0,0,0,.4)}
 .ai-panel.open{display:flex;flex-direction:column}
@@ -551,8 +551,8 @@ function askAI(){
   thinkDiv.id='ai-thinking';
   thinkDiv.innerHTML='<em style="color:var(--t4)">Thinking...</em>';
   msgs.appendChild(thinkDiv);
-  // Scroll to bottom to show thinking
-  msgs.scrollTop=msgs.scrollHeight;
+  // Scroll so user message + thinking are visible
+  userDiv.scrollIntoView({behavior:'smooth',block:'start'});
   document.getElementById('ai-send').disabled=true;
 
   aiHistory.push({role:'user',content:q});
@@ -567,9 +567,9 @@ function askAI(){
     if(el){
       el.removeAttribute('id');
       el.innerHTML=renderMd(reply);
+      // Scroll to show the question + start of answer, not the end
+      userDiv.scrollIntoView({behavior:'smooth',block:'start'});
     }
-    // Scroll so the response is visible from the top
-    setTimeout(function(){msgs.scrollTop=msgs.scrollHeight},50);
   })
   .catch(function(err){
     var el=document.getElementById('ai-thinking');
@@ -577,7 +577,7 @@ function askAI(){
       el.removeAttribute('id');
       el.innerHTML='<span style="color:var(--ep-del)">Connection error. Please try again.</span>';
     }
-    setTimeout(function(){msgs.scrollTop=msgs.scrollHeight},50);
+    userDiv.scrollIntoView({behavior:'smooth',block:'start'});
   })
   .finally(function(){document.getElementById('ai-send').disabled=false;document.getElementById('ai-input').focus()});
 }
