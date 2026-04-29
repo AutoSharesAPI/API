@@ -35,48 +35,86 @@ This returns a list of agreements that must be signed. Each agreement must be ac
 
 Users who have not signed the required agreements will receive delayed data (typically 15 minutes) even in the production environment. Contact your AutoShares representative if you need assistance with market data entitlements.
 
+## Architecture: REST vs WebSocket
+
+AutoShares uses two protocols for API access. Understanding which to use is critical:
+
+```
+REST API (proxied):
+  Your App → api.autoshares.dev → Cloudflare Worker → ETNA
+  ✓ CORS handled    ✓ Origin masked    ✓ Auto-refresh
+
+WebSocket Streaming (direct):
+  Your App → wss://streamer-host:443 → ETNA Streamer
+  ✓ Lowest latency  ✓ Real-time push   ✗ Cannot be proxied
+```
+
+**Why WebSocket is direct:** Cloudflare Workers cannot maintain persistent WebSocket connections to third-party servers. Proxying would add latency to real-time market data — the opposite of what active traders need. This is industry standard — Alpaca, Polygon, and every trading platform with streaming uses direct WebSocket connections.
+
 ## Endpoints
 
-| Service | Endpoint | Protocol |
-|---------|----------|----------|
-| **Get Streamer Info** | `https://api.autoshares.dev/v1.0/streamers` | REST |
-| **Quote Streamer** | `wss://{quote-host}:443` (from streamer info) | WebSocket |
-| **Trade Streamer** | `wss://{trade-host}:443` (from streamer info) | WebSocket |
-| **Check Agreements** | `https://api.autoshares.dev/v1.0/users/@me/agreements` | REST |
-| **Sign Agreement** | `https://api.autoshares.dev/v1.0/users/@me/agreements/{id}/sign` | REST |
-
-**Note:** REST calls go through the API proxy (`api.autoshares.dev`). WebSocket connections go directly to the streamer hosts returned by the `/streamers` endpoint — these cannot be proxied through Cloudflare Workers (WebSocket connections require direct connection to the streamer server).
+| Service | URL | Protocol | Proxied? |
+|---------|-----|----------|----------|
+| **Get Streamer Info** | `https://api.autoshares.dev/v1.0/streamers` | REST | Yes |
+| **Check Agreements** | `https://api.autoshares.dev/v1.0/users/@me/agreements` | REST | Yes |
+| **Sign Agreement** | `https://api.autoshares.dev/v1.0/users/@me/agreements/{id}/sign` | REST | Yes |
+| **Quote Streamer** | `wss://` URL from `/streamers` response | WebSocket | No — direct |
+| **Trade Streamer** | `wss://` URL from `/streamers` response | WebSocket | No — direct |
 
 ## Connection Setup
 
-### Step 1: Get Streamer Info
+### Step 1: Authenticate
 
-Retrieve the WebSocket connection details via the API proxy:
+```bash
+# Get Bearer token through the proxy
+TOKEN=$(curl -s -X POST "https://api.autoshares.dev/token" \
+  -H "Accept: application/json" \
+  -H "Et-App-Key: YOUR_APP_KEY" \
+  -H "Username: YOUR_USER" \
+  -H "Password: YOUR_PASS" \
+  -H "Content-Length: 0" | jq -r '.Token')
+```
+
+### Step 2: Get Streamer Info
 
 ```bash
 curl -s "https://api.autoshares.dev/v1.0/streamers" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Authorization: Bearer $TOKEN" \
   -H "Et-App-Key: YOUR_APP_KEY"
 ```
 
-Response:
+Response (actual sandbox URLs):
 
 ```json
 {
-  "Result": {
-    "QuoteAddresses": {
-      "HostName": "wss://md-str-gmh-demo-prod.etnasoft.us:443",
-      "SessionID": "abc123"
-    },
-    "DataAddresses": {
-      "HostName": "wss://oms-str-gmh-demo-prod.etnasoft.us:443",
-      "SessionID": "def456"
+  "QuoteAddresses": [
+    {
+      "Url": "wss://md-str-gmh-demo-prod.etnasoft.us:443",
+      "Type": "EntitlementBased",
+      "SessionId": "29cc662b-f164-4fa6-85a2-9ce0404142c6"
     }
-  }
+  ],
+  "DataAddresses": [
+    {
+      "Url": "wss://oms-str-gmh-demo-prod.etnasoft.us:443",
+      "Type": "delayed"
+    }
+  ]
 }
 ```
 
-**Important:** The WebSocket URLs returned here are direct connections to the streaming servers. These are the only endpoints that connect directly to the backend — all other API calls should go through `api.autoshares.dev`.
+### Step 3: Connect to WebSocket (Direct)
+
+Use the `Url` and `SessionId` from the response to open a direct WebSocket connection:
+
+```
+wss://md-str-gmh-demo-prod.etnasoft.us:443/CreateSession.txt
+  ?User=YOUR_USERNAME:SESSION_ID
+  &Password=STREAMER_SESSION_ID
+  &HttpClientType=WebSocket
+```
+
+**These WebSocket URLs connect directly to the streaming servers — not through `api.autoshares.dev`.** This is by design for minimum latency.
 
 Two streamers are available:
 
