@@ -76,12 +76,9 @@ body{background:var(--bg);color:var(--t1);font-family:ui-sans-serif,system-ui,-a
 .sb-method-post{background:var(--ep-post-bg);color:var(--ep-post)}
 .sb-method-put{background:var(--ep-put-bg);color:var(--ep-put)}
 .sb-method-delete{background:var(--ep-del-bg);color:var(--ep-del)}
-.sb-footer{position:sticky;bottom:0;padding:8px 16px;border-top:1px solid var(--b1);background:var(--bg1);display:flex;align-items:center;gap:8px}
-.sb-gear{width:32px;height:32px;border:1px solid var(--b1);border-radius:8px;background:transparent;color:var(--t4);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:all .12s}
-.sb-gear:hover{color:var(--ac);border-color:var(--ac)}
-.sb-gear.active{color:var(--ac);border-color:var(--ac);background:var(--ac-dim)}
-.sb-theme-toggle{width:32px;height:32px;border:1px solid var(--b1);border-radius:8px;background:transparent;color:var(--t4);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .12s}
-.sb-theme-toggle:hover{color:var(--t1);border-color:var(--t3)}
+.hdr-icon{width:36px;height:36px;border:1.5px solid var(--b1);border-radius:8px;background:transparent;color:var(--t4);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:all .12s}
+.hdr-icon:hover{color:var(--t1);border-color:var(--t3)}
+.hdr-icon.active{color:var(--ac);border-color:var(--ac);background:var(--ac-dim)}
 .sb-toggle{display:none;position:fixed;top:0;left:0;right:0;height:72px;background:var(--bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--b1);z-index:100;padding:0 16px;font-family:inherit;font-size:15px;font-weight:600;color:var(--t1);border:0;cursor:pointer;text-align:left}
 
 /* ── Endpoint layout (single column now) ── */
@@ -270,6 +267,8 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
   <nav class="hdr-nav">
     <button class="hdr-ai" onclick="toggleAI()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4m-7.07-2.93l2.83-2.83m8.48-8.48l2.83-2.83M2 12h4m12 0h4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83"/></svg>Ask AI</button>
     <a class="hdr-cta" href="javascript:void(0)" onclick="loadDoc('pages/signup.md')">Get API Access</a>
+    <button class="hdr-icon" id="gear-btn" onclick="toggleSettings()" title="API Settings">&#9881;</button>
+    <button class="hdr-icon" onclick="toggleTheme()" id="theme-btn" title="Toggle theme"></button>
   </nav>
 </header>
 
@@ -278,10 +277,6 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
 <!-- Sidebar -->
 <nav class="sidebar" id="sidebar">
   <div id="nav-tree"></div>
-  <div class="sb-footer">
-    <button class="sb-gear" id="gear-btn" onclick="toggleSettings()" title="API Settings">&#9881;</button>
-    <button class="sb-theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle theme"></button>
-  </div>
 
 </nav>
 
