@@ -16,6 +16,16 @@ AutoShares supports Single Sign-On integration using the OpenID Connect (OIDC) p
 - Your application must be registered as an Identity Provider with AutoShares
 - You need to provide your OIDC endpoints to the AutoShares integration team
 
+## API Endpoints
+
+All SSO-related API calls route through the AutoShares API proxy:
+
+| Endpoint | URL |
+|----------|-----|
+| **Authentication (token)** | `https://api.autoshares.dev/token` |
+| **Keycloak OIDC Discovery** | Provided during onboarding |
+| **Logout** | Provided during onboarding |
+
 ## Setup Process
 
 ### Step 1: Provide Your Details
@@ -38,54 +48,75 @@ AutoShares will provide:
 | **Client ID** | Your OIDC client identifier |
 | **Redirect URI** | The callback URL configured on our side |
 | **Keycloak Realm URL** | The OIDC discovery endpoint |
+| **SSO Token Endpoint** | `https://api.autoshares.dev/token` |
 
 ### Step 3: Configure Your Application
 
-Add the AutoShares OIDC configuration to your app:
-
 ```javascript
 const oidcConfig = {
-  authority: "https://{autoshares-keycloak-url}/realms/{realm}",
-  client_id: "YOUR_CLIENT_ID",
+  authority: "https://{keycloak-url}/realms/{realm}",  // Provided by AutoShares
+  client_id: "YOUR_CLIENT_ID",                         // Provided by AutoShares
   redirect_uri: "https://yourapp.com/callback",
   response_type: "code",
   scope: "openid profile email",
 };
 ```
 
-### Step 4: Handle the Callback
+### Step 4: Authenticate via API Proxy
 
-After successful authentication, extract the token and redirect to the trading platform:
+After OIDC callback, exchange credentials for a trading token:
+
+```bash
+curl -X POST "https://api.autoshares.dev/token" \
+  -H "Accept: application/json" \
+  -H "Et-App-Key: YOUR_APP_KEY" \
+  -H "Username: USER_FROM_OIDC" \
+  -H "Password: USER_PASSWORD"
+```
 
 ```javascript
 // After OIDC callback
 const idToken = await oidcClient.processSigninResponse();
 
-// Redirect to AutoShares trading platform
-window.location.href = `https://demo.autoshares.com/sso?token=${idToken}`;
+// Get trading API token through the proxy
+const authRes = await fetch("https://api.autoshares.dev/token", {
+  method: "POST",
+  headers: {
+    "Accept": "application/json",
+    "Et-App-Key": "YOUR_APP_KEY",
+    "Username": idToken.profile.email,
+    "Password": userPassword,
+  },
+});
+const { Token } = await authRes.json();
+
+// Now use Token for all trading API calls
+const positions = await fetch("https://api.autoshares.dev/v1.0/accounts/ID/positions", {
+  headers: {
+    "Authorization": `Bearer ${Token}`,
+    "Et-App-Key": "YOUR_APP_KEY",
+  },
+});
 ```
 
-## Authentication Flow Diagram
+## Authentication Flow
 
 ```
-Your App                    AutoShares Auth              Trading Platform
-   |                              |                            |
-   |-- 1. User logs in ---------->|                            |
-   |                              |                            |
-   |<- 2. Redirect to OIDC ------|                            |
-   |                              |                            |
-   |-- 3. Auth request ---------->|                            |
-   |                              |                            |
-   |<- 4. ID token + redirect ---|                            |
-   |                              |                            |
-   |-- 5. Open Trader App --------|------------>|              |
-   |                              |             |-- 6. Access  |
-   |                              |             |   granted    |
+Your App                    AutoShares SSO               API Proxy
+   |                              |                         |
+   |-- 1. User logs in ---------->|                         |
+   |<- 2. OIDC redirect ---------|                         |
+   |-- 3. Auth + credentials ---->|                         |
+   |<- 4. ID token --------------|                         |
+   |                              |                         |
+   |-- 5. POST /token ---------------------------------->  |
+   |<- 6. Bearer token ---------------------------------  |
+   |                              |                         |
+   |-- 7. GET /positions --------------------------------> |
+   |<- 8. Data -------------------------------------------  |
 ```
 
 ## Required Claims
-
-The ID token must include these claims:
 
 | Claim | Type | Description |
 |-------|------|-------------|
@@ -97,19 +128,23 @@ The ID token must include these claims:
 
 ## Logout
 
-To implement single logout, redirect to the AutoShares logout endpoint:
+```javascript
+// Sign out of AutoShares
+await fetch("https://api.autoshares.dev/logout", { method: "POST",
+  headers: { "Authorization": `Bearer ${token}`, "Et-App-Key": appKey }
+});
 
+// Redirect to OIDC logout
+window.location.href = `https://{keycloak-url}/realms/{realm}/protocol/openid-connect/logout?redirect_uri=${yourLogoutUrl}`;
 ```
-GET https://{autoshares-keycloak-url}/realms/{realm}/protocol/openid-connect/logout?redirect_uri={your-logout-url}
-```
 
-## Security Considerations
+## Security
 
-- All OIDC flows must use HTTPS
-- Use PKCE (Proof Key for Code Exchange) for public clients
+- All flows must use HTTPS
+- Use PKCE (Proof Key for Code Exchange) for browser-based apps
+- All API calls go through `api.autoshares.dev` — never call backend servers directly
 - Validate ID tokens server-side before granting access
-- Store tokens securely — never expose in URLs or localStorage for production
-- Set appropriate token lifetimes (recommended: 15 minutes for access tokens)
+- Token lifetime: 60 minutes (re-authenticate when expired)
 
 ## Need Help?
 

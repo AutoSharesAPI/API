@@ -13,7 +13,7 @@ When building custom trading applications, you must implement agreement manageme
 After authentication, call the agreements endpoint:
 
 ```
-GET /v1.0/users/@me/agreements
+GET https://api.autoshares.dev/v1.0/users/@me/agreements
 ```
 
 **Headers:**
@@ -90,7 +90,7 @@ Embed the agreements signing UI in an iframe:
 To sign an agreement programmatically (without the iframe):
 
 ```
-POST /v1.0/users/@me/agreements/{agreementId}/sign
+POST https://api.autoshares.dev/v1.0/users/@me/agreements/{agreementId}/sign
 ```
 
 **Headers:**

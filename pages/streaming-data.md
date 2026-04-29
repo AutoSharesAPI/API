@@ -35,14 +35,28 @@ This returns a list of agreements that must be signed. Each agreement must be ac
 
 Users who have not signed the required agreements will receive delayed data (typically 15 minutes) even in the production environment. Contact your AutoShares representative if you need assistance with market data entitlements.
 
+## Endpoints
+
+| Service | Endpoint | Protocol |
+|---------|----------|----------|
+| **Get Streamer Info** | `https://api.autoshares.dev/v1.0/streamers` | REST |
+| **Quote Streamer** | `wss://{quote-host}:443` (from streamer info) | WebSocket |
+| **Trade Streamer** | `wss://{trade-host}:443` (from streamer info) | WebSocket |
+| **Check Agreements** | `https://api.autoshares.dev/v1.0/users/@me/agreements` | REST |
+| **Sign Agreement** | `https://api.autoshares.dev/v1.0/users/@me/agreements/{id}/sign` | REST |
+
+**Note:** REST calls go through the API proxy (`api.autoshares.dev`). WebSocket connections go directly to the streamer hosts returned by the `/streamers` endpoint — these cannot be proxied through Cloudflare Workers (WebSocket connections require direct connection to the streamer server).
+
 ## Connection Setup
 
 ### Step 1: Get Streamer Info
 
-Retrieve the WebSocket connection details:
+Retrieve the WebSocket connection details via the API proxy:
 
-```
-GET /v1.0/streamers
+```bash
+curl -s "https://api.autoshares.dev/v1.0/streamers" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Et-App-Key: YOUR_APP_KEY"
 ```
 
 Response:
@@ -51,16 +65,18 @@ Response:
 {
   "Result": {
     "QuoteAddresses": {
-      "HostName": "wss://quote-streamer-host:443",
+      "HostName": "wss://md-str-gmh-demo-prod.etnasoft.us:443",
       "SessionID": "abc123"
     },
     "DataAddresses": {
-      "HostName": "wss://trade-streamer-host:443",
+      "HostName": "wss://oms-str-gmh-demo-prod.etnasoft.us:443",
       "SessionID": "def456"
     }
   }
 }
 ```
+
+**Important:** The WebSocket URLs returned here are direct connections to the streaming servers. These are the only endpoints that connect directly to the backend — all other API calls should go through `api.autoshares.dev`.
 
 Two streamers are available:
 
@@ -186,7 +202,7 @@ def on_open(ws):
     }))
 
 ws = websocket.WebSocketApp(
-    "wss://quote-streamer-host:443/CreateSession",
+    "wss://md-str-gmh-demo-prod.etnasoft.us:443/CreateSession",
     on_message=on_message,
     on_open=on_open
 )
@@ -196,7 +212,7 @@ ws.run_forever()
 ## Connection Example (JavaScript)
 
 ```javascript
-const ws = new WebSocket("wss://quote-streamer-host:443/CreateSession");
+const ws = new WebSocket("wss://md-str-gmh-demo-prod.etnasoft.us:443/CreateSession");
 
 ws.onopen = () => {
   ws.send(JSON.stringify({
