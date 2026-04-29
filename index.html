@@ -5,129 +5,167 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>AutoShares API Documentation</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
-:root,[data-theme="light"]{--bg:#fff;--bg1:#f6f8fa;--bg2:#f0f2f5;--bg3:#e8ebef;--b1:rgba(208,215,222,.7);--b2:#d1d9e0;--t1:#1f2328;--t2:#424a53;--t3:#656d76;--t4:#8b949e;--ac:#00967d;--ac-dim:rgba(0,150,125,.08);--code-bg:#f6f8fa;--shadow:0 1px 3px rgba(0,0,0,.08)}
-[data-theme="dark"]{--bg:#0d1117;--bg1:#161b22;--bg2:#1c2128;--bg3:#21262d;--b1:rgba(48,54,61,.7);--b2:#30363d;--t1:#e6edf3;--t2:#b1bac4;--t3:#8b949e;--t4:#6e7681;--ac:#00c9a7;--ac-dim:rgba(0,201,167,.12);--code-bg:#161b22;--shadow:0 1px 3px rgba(0,0,0,.4)}
+:root,[data-theme="light"]{
+  --bg:#fff;--bg1:#fafbfc;--bg2:#f4f5f7;--bg3:#ebedf0;--bg4:#dfe2e6;
+  --b1:#e3e6ea;--b2:#d1d5da;
+  --t1:#1f2328;--t2:#32383f;--t3:#57606a;--t4:#6e7781;--t5:#8c959f;
+  --ac:#00c9a7;--ac-hover:#00b396;--ac-dim:rgba(0,201,167,.08);--ac-border:rgba(0,201,167,.3);
+  --code-bg:#f6f8fa;--code-border:#e8ebef;
+  --header-bg:rgba(255,255,255,.8);--shadow:0 1px 2px rgba(0,0,0,.06);--shadow-lg:0 4px 16px rgba(0,0,0,.08);
+  --ep-get-bg:rgba(34,197,94,.08);--ep-get:#16a34a;--ep-post-bg:rgba(59,130,246,.08);--ep-post:#2563eb;
+  --ep-put-bg:rgba(245,158,11,.08);--ep-put:#d97706;--ep-del-bg:rgba(239,68,68,.08);--ep-del:#dc2626;
+}
+[data-theme="dark"]{
+  --bg:#0d1117;--bg1:#151b23;--bg2:#1c2128;--bg3:#21262d;--bg4:#30363d;
+  --b1:#30363d;--b2:#484f58;
+  --t1:#e6edf3;--t2:#c9d1d9;--t3:#8b949e;--t4:#6e7681;--t5:#484f58;
+  --ac:#00c9a7;--ac-hover:#33d4b8;--ac-dim:rgba(0,201,167,.1);--ac-border:rgba(0,201,167,.25);
+  --code-bg:#161b22;--code-border:#30363d;
+  --header-bg:rgba(13,17,23,.8);--shadow:0 1px 2px rgba(0,0,0,.3);--shadow-lg:0 4px 16px rgba(0,0,0,.4);
+  --ep-get-bg:rgba(34,197,94,.1);--ep-get:#22c55e;--ep-post-bg:rgba(59,130,246,.1);--ep-post:#60a5fa;
+  --ep-put-bg:rgba(245,158,11,.1);--ep-put:#f59e0b;--ep-del-bg:rgba(239,68,68,.1);--ep-del:#ef4444;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--t1);font-family:'Inter',system-ui,sans-serif;line-height:1.6;display:flex;min-height:100vh;transition:background .2s,color .2s}
+body{background:var(--bg);color:var(--t1);font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.65;display:flex;min-height:100vh;transition:background .15s,color .15s}
 
-/* Sidebar */
-.sidebar{width:280px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--b1);overflow-y:auto;position:fixed;top:0;left:0;bottom:0;z-index:10;transition:background .2s}
-.sb-head{padding:14px 20px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center}
-.sb-brand h1{font-size:16px;font-weight:800;color:var(--ac)}
-.sb-brand span{font-size:9px;color:var(--t4);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
-.theme-btn{width:30px;height:30px;border:1px solid var(--b1);border-radius:6px;background:var(--bg2);color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+/* ── Header ── */
+.header{position:fixed;top:0;left:0;right:0;height:64px;background:var(--header-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--b1);z-index:100;display:flex;align-items:center;padding:0 24px}
+.hdr-brand{display:flex;align-items:center;gap:8px;min-width:264px}
+.hdr-brand h1{font-size:15px;font-weight:700;color:var(--t1)}
+.hdr-brand h1 span{color:var(--ac)}
+.hdr-nav{display:flex;align-items:center;gap:16px;flex:1;justify-content:flex-end}
+.hdr-link{font-size:13px;font-weight:500;color:var(--t3);text-decoration:none;transition:color .12s}
+.hdr-link:hover{color:var(--t1)}
+.hdr-cta{padding:6px 16px;background:var(--ac);color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;transition:background .12s}
+[data-theme="light"] .hdr-cta{color:#fff}
+.hdr-cta:hover{background:var(--ac-hover)}
+.theme-btn{width:32px;height:32px;border:1px solid var(--b1);border-radius:8px;background:transparent;color:var(--t4);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .12s}
 .theme-btn:hover{color:var(--ac);border-color:var(--ac)}
-.sb-search{padding:8px 16px}
-.sb-search input{width:100%;padding:7px 10px;border:1.5px solid var(--b1);background:var(--bg);border-radius:6px;color:var(--t1);font-size:12px;font-family:inherit}
-.sb-search input:focus{border-color:var(--ac);outline:none}
-.sb-search input::placeholder{color:var(--t4)}
-.sb-section{padding:2px 0}
-.sb-section-title{padding:14px 20px 4px;font-size:9px;font-weight:800;color:var(--t4);text-transform:uppercase;letter-spacing:.08em}
-.sb-link{display:block;padding:5px 20px;font-size:12px;color:var(--t3);text-decoration:none;cursor:pointer;transition:all .1s;border-left:2px solid transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── Sidebar ── */
+.sidebar{width:288px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--b1);overflow-y:auto;position:fixed;top:64px;left:0;bottom:0;z-index:10;padding:16px 0}
+.sb-search{padding:0 16px 12px}
+.sb-search input{width:100%;padding:8px 12px;border:1px solid var(--b1);background:var(--bg);border-radius:8px;color:var(--t1);font-size:14px;font-family:inherit;transition:border-color .12s}
+.sb-search input:focus{border-color:var(--ac);outline:none;box-shadow:0 0 0 3px var(--ac-dim)}
+.sb-search input::placeholder{color:var(--t5)}
+.sb-section{padding:4px 0}
+.sb-section-title{padding:16px 16px 4px;font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.05em}
+.sb-link{display:block;padding:6px 16px;font-size:14px;font-weight:500;color:var(--t3);text-decoration:none;cursor:pointer;transition:all .08s;border-left:2px solid transparent;margin:0 8px;border-radius:6px}
 .sb-link:hover{color:var(--t1);background:var(--bg2)}
-.sb-link.active{color:var(--ac);border-left-color:var(--ac);background:var(--ac-dim);font-weight:700}
-.sb-link.depth-1{padding-left:32px;font-size:11px}
-.sb-cta{display:block;margin:12px 16px;padding:8px 14px;background:var(--ac);color:#fff;border-radius:6px;font-size:12px;font-weight:800;text-align:center;text-decoration:none;transition:filter .12s}
-[data-theme="light"] .sb-cta{color:#000}
-.sb-cta:hover{filter:brightness(1.1)}
-.sb-toggle{display:none;padding:10px 16px;background:var(--bg1);border:0;border-bottom:1px solid var(--b1);color:var(--t2);font-size:14px;font-weight:700;cursor:pointer;width:100%;text-align:left;position:fixed;top:0;left:0;right:0;z-index:20;font-family:inherit}
+.sb-link.active{color:var(--ac);background:var(--ac-dim);border-color:transparent;font-weight:600}
+.sb-link.depth-1{padding-left:28px;font-size:13px}
+.sb-tag-count{font-size:11px;color:var(--t5);font-weight:400;margin-left:4px}
+.sb-toggle{display:none;position:fixed;top:0;left:0;right:0;height:64px;background:var(--header-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--b1);z-index:100;padding:0 16px;font-family:inherit;font-size:15px;font-weight:600;color:var(--t1);border:0;cursor:pointer;text-align:left}
 
-/* Content */
-.content{flex:1;margin-left:280px;padding:32px 48px;max-width:960px;transition:background .2s}
+/* ── Content ── */
+.content{flex:1;margin-left:288px;margin-top:64px;padding:40px 48px;max-width:720px}
 
-/* Markdown */
-.md h1{font-size:26px;font-weight:800;color:var(--t1);margin:0 0 16px;padding-bottom:8px;border-bottom:1px solid var(--b1)}
-.md h2{font-size:19px;font-weight:800;color:var(--t1);margin:28px 0 10px}
-.md h3{font-size:15px;font-weight:700;color:var(--t2);margin:20px 0 8px}
-.md h4{font-size:13px;font-weight:700;color:var(--t3);margin:14px 0 6px}
-.md p{color:var(--t2);margin:0 0 12px;font-size:13.5px;line-height:1.7}
-.md a{color:var(--ac);text-decoration:none;font-weight:600}
+/* ── Markdown ── */
+.md h1{font-size:30px;font-weight:700;color:var(--t1);margin:0 0 8px;letter-spacing:-.02em}
+.md h1+p{font-size:16px;color:var(--t3);margin-bottom:24px}
+.md h2{font-size:22px;font-weight:700;color:var(--t1);margin:36px 0 12px;letter-spacing:-.01em}
+.md h3{font-size:17px;font-weight:600;color:var(--t2);margin:24px 0 8px}
+.md h4{font-size:15px;font-weight:600;color:var(--t3);margin:20px 0 6px}
+.md p{color:var(--t2);margin:0 0 16px;font-size:15px;line-height:1.7}
+.md a{color:var(--ac);text-decoration:none;font-weight:500;transition:color .1s}
 .md a:hover{text-decoration:underline}
-.md ul,.md ol{margin:0 0 12px 20px;color:var(--t2);font-size:13.5px}
-.md li{margin-bottom:4px}
-.md code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;padding:2px 6px;background:var(--code-bg);border:1px solid var(--b1);border-radius:4px;color:var(--ac)}
-.md pre{background:var(--code-bg);border:1px solid var(--b1);border-radius:7px;padding:14px 16px;overflow-x:auto;margin:0 0 16px;font-size:12px;line-height:1.5;position:relative}
-.md pre code{padding:0;background:none;border:0;color:var(--t1)}
-.md table{width:100%;border-collapse:collapse;margin:0 0 16px;font-size:12px}
-.md th{text-align:left;padding:8px 10px;font-size:9px;font-weight:800;color:var(--t4);text-transform:uppercase;letter-spacing:.06em;background:var(--bg2);border-bottom:1px solid var(--b1)}
-.md td{padding:8px 10px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:top}
+.md ul,.md ol{margin:0 0 16px 24px;color:var(--t2);font-size:15px}
+.md li{margin-bottom:6px;line-height:1.65}
+.md code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;padding:2px 6px;background:var(--code-bg);border:1px solid var(--code-border);border-radius:6px;color:var(--ac)}
+.md pre{background:var(--code-bg);border:1px solid var(--code-border);border-radius:10px;padding:16px 20px;overflow-x:auto;margin:0 0 20px;font-size:13px;line-height:1.6;position:relative}
+.md pre code{padding:0;background:none;border:0;color:var(--t1);font-size:13px}
+.md table{width:100%;border-collapse:collapse;margin:0 0 20px;font-size:14px;border:1px solid var(--b1);border-radius:10px;overflow:hidden}
+.md th{text-align:left;padding:10px 14px;font-size:12px;font-weight:600;color:var(--t4);background:var(--bg2);border-bottom:1px solid var(--b1)}
+.md td{padding:10px 14px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:top}
+.md tr:last-child td{border-bottom:0}
 .md tr:hover td{background:var(--bg2)}
-.md blockquote{border-left:3px solid var(--ac);margin:0 0 16px;padding:8px 16px;background:var(--ac-dim);border-radius:0 5px 5px 0}
-.md blockquote p{color:var(--t2);margin:0}
-.md img{max-width:100%;border-radius:6px;border:1px solid var(--b1);margin:8px 0}
-.md hr{border:0;border-top:1px solid var(--b1);margin:24px 0}
+.md blockquote{border-left:3px solid var(--ac);margin:0 0 20px;padding:12px 20px;background:var(--ac-dim);border-radius:0 10px 10px 0}
+.md blockquote p{color:var(--t2);margin:0;font-size:14px}
+.md img{max-width:100%;border-radius:10px;border:1px solid var(--b1);margin:8px 0}
+.md hr{border:0;border-top:1px solid var(--b1);margin:32px 0}
 
-/* API Reference */
-.endpoint{margin-bottom:12px;border:1px solid var(--b1);border-radius:8px;overflow:hidden;box-shadow:var(--shadow)}
-.ep-head{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg1);cursor:pointer;transition:background .1s}
+/* ── API Endpoints ── */
+.endpoint{margin-bottom:8px;border:1px solid var(--b1);border-radius:10px;overflow:hidden;transition:box-shadow .12s}
+.endpoint:hover{box-shadow:var(--shadow)}
+.ep-head{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:background .08s}
 .ep-head:hover{background:var(--bg2)}
-.ep-badge{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:800;padding:3px 8px;border-radius:4px;min-width:52px;text-align:center;text-transform:uppercase}
-.ep-get{background:rgba(34,197,94,.12);color:#16a34a}
-.ep-post{background:rgba(0,153,255,.12);color:#0077cc}
-.ep-put{background:rgba(245,158,11,.12);color:#d97706}
-.ep-delete{background:rgba(239,68,68,.12);color:#dc2626}
-[data-theme="dark"] .ep-get{color:#22c55e}[data-theme="dark"] .ep-post{color:#0099ff}[data-theme="dark"] .ep-put{color:#f59e0b}[data-theme="dark"] .ep-delete{color:#ef4444}
-.ep-path{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t1);font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ep-sum{font-size:11px;color:var(--t4);max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ep-body{display:none;padding:16px;border-top:1px solid var(--b1);background:var(--bg)}
+.ep-badge{font-family:ui-monospace,monospace;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;min-width:56px;text-align:center;letter-spacing:.02em}
+.ep-get{background:var(--ep-get-bg);color:var(--ep-get)}.ep-post{background:var(--ep-post-bg);color:var(--ep-post)}.ep-put{background:var(--ep-put-bg);color:var(--ep-put)}.ep-delete{background:var(--ep-del-bg);color:var(--ep-del)}
+.ep-path{font-family:ui-monospace,monospace;font-size:13px;color:var(--t1);font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ep-sum{font-size:13px;color:var(--t4);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ep-chev{color:var(--t5);transition:transform .15s;font-size:12px}
+.ep-body{display:none;padding:20px;border-top:1px solid var(--b1);background:var(--bg)}
 .ep-body.open{display:block}
-.ep-body h4{font-size:11px;font-weight:800;color:var(--t4);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 6px}
+.ep-body h4{font-size:12px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 8px}
 .ep-body h4:first-child{margin-top:0}
-.ep-body p{font-size:12px}
-.ep-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:12px}
-.ep-tbl th{text-align:left;padding:6px 8px;font-size:8px;font-weight:800;color:var(--t4);text-transform:uppercase;letter-spacing:.06em;background:var(--bg2);border-bottom:1px solid var(--b1)}
-.ep-tbl td{padding:6px 8px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:top}
-.ep-tbl code{font-size:10px;border:0}
-.ep-curl{background:var(--code-bg);border:1px solid var(--b1);border-radius:6px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t1);overflow-x:auto;white-space:pre;margin-top:6px;position:relative}
-.lang-tabs{display:flex;gap:0;border-bottom:1px solid var(--b1);margin:12px 0 0}
-.lang-tab{padding:5px 12px;font-size:10px;font-weight:700;color:var(--t4);cursor:pointer;border:0;background:transparent;font-family:inherit;border-bottom:2px solid transparent;transition:all .12s}
+.ep-body p{font-size:14px;color:var(--t3);margin-bottom:12px}
+.ep-tbl{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px;border:1px solid var(--b1);border-radius:8px;overflow:hidden}
+.ep-tbl th{text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:var(--t4);background:var(--bg2);border-bottom:1px solid var(--b1)}
+.ep-tbl td{padding:8px 12px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:top}
+.ep-tbl tr:last-child td{border-bottom:0}
+.ep-tbl code{font-size:12px;border:0;background:var(--code-bg);padding:1px 4px;border-radius:4px}
+
+/* ── Language Tabs ── */
+.lang-tabs{display:flex;gap:0;border:1px solid var(--b1);border-bottom:0;border-radius:10px 10px 0 0;overflow:hidden;margin-top:16px}
+.lang-tab{flex:1;padding:8px 12px;font-size:12px;font-weight:600;color:var(--t4);cursor:pointer;border:0;background:var(--bg2);font-family:inherit;transition:all .1s;text-align:center}
 .lang-tab:hover{color:var(--t1)}
-.lang-tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.lang-tab.on{color:var(--ac);background:var(--bg)}
 .lang-block{display:none}
 .lang-block.on{display:block}
+.code-panel{background:var(--code-bg);border:1px solid var(--b1);border-top:0;border-radius:0 0 10px 10px;padding:16px;font-family:ui-monospace,monospace;font-size:12px;color:var(--t1);overflow-x:auto;white-space:pre;line-height:1.6;position:relative}
 
-/* Copy button */
-.copy-btn{position:absolute;top:6px;right:6px;padding:3px 8px;border:1px solid var(--b1);border-radius:4px;background:var(--bg1);color:var(--t4);font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;transition:opacity .15s}
-pre:hover .copy-btn,.ep-curl:hover .copy-btn{opacity:1}
+/* ── Copy Button ── */
+.copy-btn{position:absolute;top:8px;right:8px;padding:4px 10px;border:1px solid var(--b1);border-radius:6px;background:var(--bg);color:var(--t4);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;opacity:0;transition:all .12s}
+pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
 .copy-btn:hover{color:var(--ac);border-color:var(--ac)}
 
-/* Footer */
-.footer{margin-top:40px;padding:20px 0;border-top:1px solid var(--b1);font-size:10px;color:var(--t4);line-height:1.6}
+/* ── Footer ── */
+.footer{margin-top:48px;padding:24px 0;border-top:1px solid var(--b1);font-size:12px;color:var(--t5);line-height:1.7}
 
-/* Responsive */
+/* ── Responsive ── */
 @media(max-width:768px){
-  .sidebar{transform:translateX(-100%);transition:transform .2s;width:280px}
+  .header{padding:0 12px}.hdr-nav .hdr-link{display:none}
+  .sidebar{transform:translateX(-100%);transition:transform .2s;width:288px;top:0;padding-top:72px}
   .sidebar.open{transform:translateX(0)}
-  .sb-toggle{display:block}
-  .content{margin-left:0;padding:56px 16px 32px}
+  .sb-toggle{display:flex;align-items:center;gap:8px}
+  .content{margin-left:0;margin-top:64px;padding:24px 16px}
 }
 </style>
 </head>
 <body>
-<button class="sb-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">Menu</button>
-<nav class="sidebar" id="sidebar">
-  <div class="sb-head">
-    <div class="sb-brand"><h1>AutoShares</h1><span>API Documentation</span></div>
+
+<!-- Header -->
+<header class="header">
+  <div class="hdr-brand"><h1><span>AutoShares</span> Docs</h1></div>
+  <nav class="hdr-nav">
+    <a class="hdr-link" href="https://autoshares.com" target="_blank">AutoShares.com</a>
+    <a class="hdr-link" href="https://autoshares.com/contact" target="_blank">Contact</a>
+    <a class="hdr-cta" href="https://demo.autoshares.com" target="_blank">Get API Access</a>
     <button class="theme-btn" onclick="toggleTheme()" id="theme-btn"></button>
-  </div>
-  <div class="sb-search"><input type="text" id="sb-filter" placeholder="Search docs..." oninput="filterNav(this.value)"></div>
-  <a class="sb-cta" href="https://demo.autoshares.com" target="_blank">Get API Access</a>
+  </nav>
+</header>
+
+<button class="sb-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ Menu</button>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-search"><input type="text" placeholder="Search docs..." oninput="filterNav(this.value)"></div>
   <div id="nav-tree"></div>
 </nav>
+
+<!-- Content -->
 <main class="content md" id="content"></main>
 
 <script>
 /* ── Theme ── */
 function getTheme(){return localStorage.getItem('as-theme')||'light'}
-function applyTheme(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('theme-btn').textContent=t==='dark'?'\u2600':'\u263D';localStorage.setItem('as-theme',t)}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('theme-btn').textContent=t==='dark'?'\u2600\uFE0F':'\u263D';localStorage.setItem('as-theme',t)}
 function toggleTheme(){applyTheme(getTheme()==='dark'?'light':'dark')}
 applyTheme(getTheme());
 
-/* ── Data ── */
+/* ── Guide pages ── */
 var GUIDES=[
 {s:'Getting Started',items:[
 {t:'Welcome',p:'pages/welcome.md'},{t:'Get API Access',p:'pages/signup.md'},{t:'Quick Start Guide',p:'pages/quickstart.md'},
@@ -141,12 +179,10 @@ var GUIDES=[
 {s:'SDKs & Tools',items:[
 {t:'SDKs & Libraries',p:'pages/sdks.md'},{t:'User Guide',p:'pages/user-guide.md'},{t:'Web Terminal',p:'pages/web-terminal.md'}
 ]},
-{s:'Resources',items:[
-{t:'Changelog',p:'pages/changelog.md'}
-]}
+{s:'Resources',items:[{t:'Changelog',p:'pages/changelog.md'}]}
 ];
 
-var spec=null;var apiTags=[];var currentView='';
+var spec=null,apiTags=[],currentView='';
 fetch('openapi.json?v='+Date.now()).then(function(r){return r.json()}).then(function(d){
   spec=d;
   var tagSet={};
@@ -154,15 +190,14 @@ fetch('openapi.json?v='+Date.now()).then(function(r){return r.json()}).then(func
   apiTags=Object.keys(tagSet).sort().map(function(t){return{name:t,count:tagSet[t]}});
   renderNav('');
   var h=location.hash.slice(1);
-  if(h&&h.startsWith('api:')){showApiTag(h.slice(4))}
-  else if(h){loadDoc(h)}
-  else{loadDoc('pages/welcome.md')}
+  if(h&&h.startsWith('api:'))showApiTag(h.slice(4));
+  else if(h)loadDoc(h);
+  else loadDoc('pages/welcome.md');
 });
 
-/* ── Navigation ── */
+/* ── Nav ── */
 function renderNav(q){
-  q=(q||'').toLowerCase();
-  var html='';
+  q=(q||'').toLowerCase();var html='';
   GUIDES.forEach(function(sec){
     var items=q?sec.items.filter(function(i){return i.t.toLowerCase().indexOf(q)>=0||sec.s.toLowerCase().indexOf(q)>=0}):sec.items;
     if(!items.length)return;
@@ -170,44 +205,36 @@ function renderNav(q){
     items.forEach(function(i){html+='<a class="sb-link" data-id="'+i.p+'" onclick="loadDoc(\''+i.p+'\')">'+i.t+'</a>'});
     html+='</div>';
   });
-  // API Reference
   var atags=q?apiTags.filter(function(t){return t.name.toLowerCase().indexOf(q)>=0}):apiTags;
   if(atags.length){
-    html+='<div class="sb-section"><div class="sb-section-title">Trading API Reference</div>';
+    html+='<div class="sb-section"><div class="sb-section-title">API Reference</div>';
     atags.forEach(function(t){
-      html+='<a class="sb-link" data-id="api:'+t.name+'" onclick="showApiTag(\''+t.name.replace(/'/g,"\\'")+'\')">'+t.name+' <span style="color:var(--t4);font-size:10px">('+t.count+')</span></a>';
+      html+='<a class="sb-link" data-id="api:'+t.name+'" onclick="showApiTag(\''+t.name.replace(/'/g,"\\'")+'\')">'+t.name+'<span class="sb-tag-count">'+t.count+'</span></a>';
     });
     html+='</div>';
   }
-  document.getElementById('nav-tree').innerHTML=html;
-  highlightNav();
+  document.getElementById('nav-tree').innerHTML=html;highlightNav();
 }
 function filterNav(q){renderNav(q)}
-function highlightNav(){
-  document.querySelectorAll('.sb-link').forEach(function(el){el.classList.toggle('active',el.getAttribute('data-id')===currentView)});
-}
+function highlightNav(){document.querySelectorAll('.sb-link').forEach(function(el){el.classList.toggle('active',el.getAttribute('data-id')===currentView)})}
 
-/* ── Load markdown page ── */
+/* ── Load markdown ── */
 function loadDoc(path){
   currentView=path;highlightNav();
   document.querySelector('.sidebar').classList.remove('open');
   var doc=document.getElementById('content');
-  fetch(path+'?v='+Date.now()).then(function(r){
-    if(!r.ok)throw new Error('Not found');return r.text()
-  }).then(function(md){
+  fetch(path+'?v='+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(md){
     md=md.replace(/\[([^\]]+)\]\(([^)]*\.md)\)/g,function(m,text,href){
       if(href.indexOf('http')===0)return m;
       var base=path.substring(0,path.lastIndexOf('/')+1);
       var resolved=base+href;var segs=resolved.split('/'),out=[];
       for(var i=0;i<segs.length;i++){if(segs[i]==='..')out.pop();else if(segs[i]!=='.')out.push(segs[i])}
-      resolved=out.join('/').replace(/\\/g,'');
-      return'<a href="javascript:void(0)" onclick="loadDoc(\''+resolved+'\')">'+text+'</a>';
+      return'<a href="javascript:void(0)" onclick="loadDoc(\''+out.join('/').replace(/\\/g,'').replace(/'/g,"\\'")+'\')">'+text+'</a>';
     });
     md=md.replace(/{%.*?%}/g,'');
     doc.innerHTML=marked.parse(md)+FOOTER;
-    addCopyButtons(doc);
-    window.scrollTo(0,0);
-  }).catch(function(){doc.innerHTML='<p style="color:var(--t3)">Could not load <code>'+path+'</code>.</p>'});
+    addCopyBtns(doc);window.scrollTo(0,0);
+  }).catch(function(){doc.innerHTML='<p style="color:var(--t4)">Page not found.</p>'});
   history.replaceState(null,'','#'+path);
 }
 
@@ -216,98 +243,75 @@ function showApiTag(tag){
   currentView='api:'+tag;highlightNav();
   document.querySelector('.sidebar').classList.remove('open');
   var doc=document.getElementById('content');
-  var paths=spec.paths;
-  var defs=spec.definitions||{};
+  var paths=spec.paths,defs=spec.definitions||{};
   var html='<h1>'+tag+'</h1>';
   var n=0;
   for(var p in paths){for(var m in paths[p]){
     var op=paths[p][m];
     if(!op.tags||op.tags.indexOf(tag)<0)continue;
     n++;var id='ep'+n;var mc=m.toUpperCase();
-    html+='<div class="endpoint"><div class="ep-head" onclick="document.getElementById(\''+id+'\').classList.toggle(\'open\')">';
+    html+='<div class="endpoint"><div class="ep-head" onclick="toggleEp(\''+id+'\')">';
     html+='<span class="ep-badge ep-'+m+'">'+mc+'</span>';
     html+='<span class="ep-path">'+esc(p)+'</span>';
     if(op.summary)html+='<span class="ep-sum">'+esc(op.summary)+'</span>';
+    html+='<span class="ep-chev" id="'+id+'c">&#9656;</span>';
     html+='</div><div class="ep-body" id="'+id+'">';
     if(op.description)html+='<p>'+esc(op.description)+'</p>';
-    // Params
     var params=op.parameters||[];
     if(params.length){
       html+='<h4>Parameters</h4><table class="ep-tbl"><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>';
       params.forEach(function(pm){
         var type=pm.type||(pm.schema?(pm.schema.type||refName(pm.schema.$ref)):'');
-        html+='<tr><td><code>'+pm.name+'</code></td><td>'+pm.in+'</td><td>'+type+'</td><td>'+(pm.required?'Yes':'')+'</td><td>'+(pm.description||'')+'</td></tr>';
+        html+='<tr><td><code>'+pm.name+'</code></td><td>'+pm.in+'</td><td>'+type+'</td><td>'+(pm.required?'Yes':'')+'</td><td>'+(pm.description||'').substring(0,200)+'</td></tr>';
       });
       html+='</tbody></table>';
     }
-    // Responses
     if(op.responses){
       html+='<h4>Responses</h4><table class="ep-tbl"><thead><tr><th>Code</th><th>Description</th><th>Schema</th></tr></thead><tbody>';
-      for(var code in op.responses){
-        var resp=op.responses[code];
-        var schema=resp.schema?refName(resp.schema.$ref)||(resp.schema.type||''):'';
-        html+='<tr><td><code>'+code+'</code></td><td>'+esc(resp.description||'')+'</td><td>'+schema+'</td></tr>';
+      for(var code in op.responses){var resp=op.responses[code];
+        html+='<tr><td><code>'+code+'</code></td><td>'+esc(resp.description||'')+'</td><td>'+(resp.schema?refName(resp.schema.$ref)||(resp.schema.type||''):'')+'</td></tr>';
       }
       html+='</tbody></table>';
     }
-    // Code examples
-    var baseUrl='https://{your-environment}.etnasoft.us/api';
-    html+=buildCodeExamples(mc,baseUrl+p,op);
+    html+=buildLangs(mc,'https://{your-environment}.etnasoft.us/api'+p,op);
     html+='</div></div>';
   }}
   html+=FOOTER;
-  doc.innerHTML=html;
-  window.scrollTo(0,0);
+  doc.innerHTML=html;window.scrollTo(0,0);
   history.replaceState(null,'','#api:'+tag);
 }
 
-function buildCodeExamples(method,url,op){
+function toggleEp(id){
+  var el=document.getElementById(id);
+  var chev=document.getElementById(id+'c');
+  var open=el.classList.toggle('open');
+  if(chev)chev.innerHTML=open?'&#9662;':'&#9656;';
+}
+
+function buildLangs(method,url,op){
   var hasBody=method==='POST'||method==='PUT';
   var h='<div class="lang-tabs">';
-  var langs=['cURL','Python','JavaScript','C#','Go'];
-  langs.forEach(function(l,i){h+='<button class="lang-tab'+(i===0?' on':'')+'" onclick="switchLang(this)">'+l+'</button>'});
+  ['cURL','Python','JavaScript','C#','Go'].forEach(function(l,i){h+='<button class="lang-tab'+(i===0?' on':'')+'" onclick="switchLang(this)">'+l+'</button>'});
   h+='</div>';
+  var codes=[];
   // cURL
-  var curl='curl -X '+method+' \\\n  --header \'Accept: application/json\' \\\n  --header \'Authorization: Bearer YOUR_TOKEN\' \\\n  --header \'Et-App-Key: YOUR_APP_KEY\'';
-  if(hasBody)curl+=' \\\n  --header \'Content-Type: application/json\' \\\n  -d \'{"key":"value"}\'';
-  curl+=' \\\n  \''+url+'\'';
-  h+='<div class="lang-block on"><div class="ep-curl">'+esc(curl)+'<button class="copy-btn" onclick="copyCode(this)">Copy</button></div></div>';
+  var c='curl -X '+method+' \\\n  -H "Accept: application/json" \\\n  -H "Authorization: Bearer $TOKEN" \\\n  -H "Et-App-Key: $APP_KEY"';
+  if(hasBody)c+=' \\\n  -H "Content-Type: application/json" \\\n  -d \'{"key":"value"}\'';
+  c+=' \\\n  "'+url+'"';codes.push(c);
   // Python
-  var py='import requests\n\nheaders = {\n    "Accept": "application/json",\n    "Authorization": "Bearer YOUR_TOKEN",\n    "Et-App-Key": "YOUR_APP_KEY"';
-  if(hasBody)py+=',\n    "Content-Type": "application/json"';
-  py+='\n}\n\n';
-  if(hasBody)py+='payload = {"key": "value"}\n\nresponse = requests.'+method.toLowerCase()+'(\n    "'+url+'",\n    headers=headers,\n    json=payload\n)';
-  else py+='response = requests.'+method.toLowerCase()+'(\n    "'+url+'",\n    headers=headers\n)';
-  py+='\nprint(response.status_code)\nprint(response.json())';
-  h+='<div class="lang-block"><div class="ep-curl">'+esc(py)+'<button class="copy-btn" onclick="copyCode(this)">Copy</button></div></div>';
+  var py='import requests\n\nresponse = requests.'+method.toLowerCase()+'(\n    "'+url+'",\n    headers={\n        "Authorization": "Bearer TOKEN",\n        "Et-App-Key": "APP_KEY",\n        "Accept": "application/json"'+(hasBody?',\n        "Content-Type": "application/json"':'')+'\n    }'+(hasBody?',\n    json={"key": "value"}':'')+'\n)\n\nprint(response.json())';codes.push(py);
   // JS
-  var js='const response = await fetch("'+url+'", {\n  method: "'+method+'",\n  headers: {\n    "Accept": "application/json",\n    "Authorization": "Bearer YOUR_TOKEN",\n    "Et-App-Key": "YOUR_APP_KEY"';
-  if(hasBody)js+=',\n    "Content-Type": "application/json"';
-  js+='\n  }';
-  if(hasBody)js+=',\n  body: JSON.stringify({ key: "value" })';
-  js+='\n});\n\nconst data = await response.json();\nconsole.log(data);';
-  h+='<div class="lang-block"><div class="ep-curl">'+esc(js)+'<button class="copy-btn" onclick="copyCode(this)">Copy</button></div></div>';
+  var js='const res = await fetch("'+url+'", {\n  method: "'+method+'",\n  headers: {\n    "Authorization": "Bearer TOKEN",\n    "Et-App-Key": "APP_KEY",\n    "Accept": "application/json"'+(hasBody?',\n    "Content-Type": "application/json"':'')+'\n  }'+(hasBody?',\n  body: JSON.stringify({ key: "value" })':'')+'\n});\nconst data = await res.json();';codes.push(js);
   // C#
-  var cs='using var client = new HttpClient();\nvar request = new HttpRequestMessage(HttpMethod.'+method.charAt(0)+method.slice(1).toLowerCase()+', "'+url+'");\nrequest.Headers.Add("Accept", "application/json");\nrequest.Headers.Add("Authorization", "Bearer YOUR_TOKEN");\nrequest.Headers.Add("Et-App-Key", "YOUR_APP_KEY");';
-  if(hasBody)cs+='\nrequest.Content = new StringContent(\n    "{}", System.Text.Encoding.UTF8, "application/json");';
-  cs+='\n\nvar response = await client.SendAsync(request);\nvar body = await response.Content.ReadAsStringAsync();\nConsole.WriteLine($"{response.StatusCode}: {body}");';
-  h+='<div class="lang-block"><div class="ep-curl">'+esc(cs)+'<button class="copy-btn" onclick="copyCode(this)">Copy</button></div></div>';
+  var cs='var client = new HttpClient();\nvar req = new HttpRequestMessage(HttpMethod.'+method.charAt(0)+method.slice(1).toLowerCase()+',\n    "'+url+'");\nreq.Headers.Add("Authorization", "Bearer TOKEN");\nreq.Headers.Add("Et-App-Key", "APP_KEY");'+(hasBody?'\nreq.Content = new StringContent("{}", Encoding.UTF8, "application/json");':'')+'\nvar res = await client.SendAsync(req);\nConsole.WriteLine(await res.Content.ReadAsStringAsync());';codes.push(cs);
   // Go
-  var go='package main\n\nimport (\n\t"fmt"\n\t"io"\n\t"net/http"';
-  if(hasBody)go+='\n\t"strings"';
-  go+='\n)\n\nfunc main() {\n';
-  if(hasBody)go+='\tbody := strings.NewReader(`{"key":"value"}`)\n\treq, _ := http.NewRequest("'+method+'", "'+url+'", body)\n';
-  else go+='\treq, _ := http.NewRequest("'+method+'", "'+url+'", nil)\n';
-  go+='\treq.Header.Set("Accept", "application/json")\n\treq.Header.Set("Authorization", "Bearer YOUR_TOKEN")\n\treq.Header.Set("Et-App-Key", "YOUR_APP_KEY")\n';
-  if(hasBody)go+='\treq.Header.Set("Content-Type", "application/json")\n';
-  go+='\n\tresp, err := http.DefaultClient.Do(req)\n\tif err != nil { panic(err) }\n\tdefer resp.Body.Close()\n\tdata, _ := io.ReadAll(resp.Body)\n\tfmt.Println(string(data))\n}';
-  h+='<div class="lang-block"><div class="ep-curl">'+esc(go)+'<button class="copy-btn" onclick="copyCode(this)">Copy</button></div></div>';
+  var go='req, _ := http.NewRequest("'+method+'", "'+url+'", '+(hasBody?'strings.NewReader(`{"key":"value"}`)':'nil')+')\nreq.Header.Set("Authorization", "Bearer TOKEN")\nreq.Header.Set("Et-App-Key", "APP_KEY")'+(hasBody?'\nreq.Header.Set("Content-Type", "application/json")':'')+'\nresp, _ := http.DefaultClient.Do(req)\ndefer resp.Body.Close()\ndata, _ := io.ReadAll(resp.Body)\nfmt.Println(string(data))';codes.push(go);
+  codes.forEach(function(code,i){h+='<div class="lang-block'+(i===0?' on':'')+'"><div class="code-panel">'+esc(code)+'<button class="copy-btn" onclick="copyCode(this)">Copy</button></div></div>'});
   return h;
 }
 
 function switchLang(btn){
-  var tabs=btn.parentElement;
-  var blocks=[];var el=tabs.nextElementSibling;
+  var tabs=btn.parentElement;var blocks=[];var el=tabs.nextElementSibling;
   while(el&&el.classList.contains('lang-block')){blocks.push(el);el=el.nextElementSibling}
   var idx=Array.from(tabs.children).indexOf(btn);
   tabs.querySelectorAll('.lang-tab').forEach(function(t,i){t.classList.toggle('on',i===idx)});
@@ -315,28 +319,19 @@ function switchLang(btn){
 }
 
 /* ── Helpers ── */
-function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function refName(r){return r?(r.split('/').pop()):''}
-function addCopyButtons(container){
-  container.querySelectorAll('pre').forEach(function(pre){
-    if(pre.querySelector('.copy-btn'))return;
-    var btn=document.createElement('button');btn.className='copy-btn';btn.textContent='Copy';
-    btn.onclick=function(e){e.stopPropagation();var code=pre.querySelector('code');
-      navigator.clipboard.writeText((code||pre).textContent).then(function(){btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy'},1500)})};
-    pre.appendChild(btn);
-  });
-}
-function copyCode(btn){var el=btn.parentElement;var code=el.querySelector('code')||el;
-  navigator.clipboard.writeText(code.textContent.replace('Copy','')).then(function(){btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy'},1500)})}
+function addCopyBtns(el){el.querySelectorAll('pre').forEach(function(pre){
+  if(pre.querySelector('.copy-btn'))return;
+  var b=document.createElement('button');b.className='copy-btn';b.textContent='Copy';
+  b.onclick=function(e){e.stopPropagation();navigator.clipboard.writeText((pre.querySelector('code')||pre).textContent).then(function(){b.textContent='Copied!';setTimeout(function(){b.textContent='Copy'},1500)})};
+  pre.appendChild(b);
+})}
+function copyCode(btn){var p=btn.parentElement;navigator.clipboard.writeText(p.textContent.replace('Copy','').trim()).then(function(){btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy'},1500)})}
 
 var FOOTER='<div class="footer">&copy; 2026 AutoShares Fintech Solutions, LLC. All rights reserved. AutoShares APIs are provided through AutoShares Fintech Solutions, LLC. Securities offered through Tradepro Securities, Inc., a FINRA/SIPC member broker-dealer. Trading involves risk including the possible loss of principal. Options trading involves substantial risk and is not suitable for all investors. Past performance is not indicative of future results. This site is for informational purposes only and does not constitute an offer to sell or a solicitation to buy any security.</div>';
 
-/* ── Init ── */
-window.addEventListener('hashchange',function(){
-  var h=location.hash.slice(1);
-  if(h.startsWith('api:'))showApiTag(h.slice(4));
-  else if(h)loadDoc(h);
-});
+window.addEventListener('hashchange',function(){var h=location.hash.slice(1);if(h.startsWith('api:'))showApiTag(h.slice(4));else if(h)loadDoc(h)});
 </script>
 </body>
 </html>
