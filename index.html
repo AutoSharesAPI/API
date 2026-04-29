@@ -145,7 +145,7 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
 .ai-head span{font-size:11px;color:var(--t4)}
 .ai-close{background:none;border:0;color:var(--t4);cursor:pointer;font-size:18px;padding:4px}
 .ai-close:hover{color:var(--t1)}
-.ai-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:200px}
+.ai-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:0}
 .ai-msg{font-size:13px;line-height:1.6;padding:10px 14px;border-radius:10px;max-width:90%}
 .ai-msg.bot{background:var(--bg2);color:var(--t2);align-self:flex-start}
 .ai-msg.user{background:var(--ac-dim);color:var(--t1);align-self:flex-end;border:1px solid var(--ac);border-color:rgba(0,201,167,.2)}
@@ -543,8 +543,8 @@ function askAI(){
   msgs.appendChild(thinking);msgs.scrollTop=msgs.scrollHeight;
   document.getElementById('ai-send').disabled=true;
 
+  msgs.scrollTop=msgs.scrollHeight;
   aiHistory.push({role:'user',content:q});
-  // Keep last 6 messages for context
   var sendMessages=aiHistory.slice(-6);
 
   fetch(AI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:sendMessages})})
@@ -553,13 +553,11 @@ function askAI(){
     var reply=(data.content&&data.content[0]?data.content[0].text:null)||(data.error?data.error.message:'Sorry, I couldn\'t process that request. Make sure the AI worker is deployed.');
     aiHistory.push({role:'assistant',content:reply});
     var el=document.getElementById('ai-thinking');
-    if(el)el.innerHTML=renderMd(reply);
-    msgs.scrollTop=msgs.scrollHeight;
+    if(el){el.innerHTML=renderMd(reply);el.scrollIntoView({behavior:'smooth',block:'start'});}
   })
   .catch(function(err){
     var el=document.getElementById('ai-thinking');
-    if(el)el.innerHTML='<span style="color:var(--ep-del)">Connection error.</span> The AI assistant requires the Cloudflare Worker to be deployed. See <code>worker.js</code> in the repo for setup instructions.';
-    msgs.scrollTop=msgs.scrollHeight;
+    if(el){el.innerHTML='<span style="color:var(--ep-del)">Connection error.</span> The AI assistant requires the Cloudflare Worker to be deployed.';el.scrollIntoView({behavior:'smooth',block:'start'});}
   })
   .finally(function(){document.getElementById('ai-send').disabled=false;document.getElementById('ai-input').focus()});
 }
