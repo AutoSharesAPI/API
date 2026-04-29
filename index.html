@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -70,6 +70,9 @@ body{background:var(--bg);color:var(--t1);font-family:ui-sans-serif,system-ui,-a
 .sb-method-post{background:var(--ep-post-bg);color:var(--ep-post)}
 .sb-method-put{background:var(--ep-put-bg);color:var(--ep-put)}
 .sb-method-delete{background:var(--ep-del-bg);color:var(--ep-del)}
+.sb-footer{position:sticky;bottom:0;padding:12px 16px;border-top:1px solid var(--b1);background:var(--bg1)}
+.sb-theme-btn{display:flex;align-items:center;gap:8px;width:100%;padding:8px 12px;border:1px solid var(--b1);border-radius:8px;background:var(--bg);color:var(--t3);cursor:pointer;font-size:13px;font-weight:500;font-family:inherit;transition:all .12s}
+.sb-theme-btn:hover{color:var(--t1);border-color:var(--ac)}
 .sb-toggle{display:none;position:fixed;top:0;left:0;right:0;height:64px;background:var(--header-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--b1);z-index:100;padding:0 16px;font-family:inherit;font-size:15px;font-weight:600;color:var(--t1);border:0;cursor:pointer;text-align:left}
 
 /* ── Content ── */
@@ -181,9 +184,7 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
 <header class="header">
   <div class="hdr-brand"><h1><span>AutoShares</span> API Documentation</h1></div>
   <nav class="hdr-nav">
-    <a class="hdr-link" href="javascript:void(0)" onclick="loadDoc('pages/contact.md')">Contact</a>
     <a class="hdr-cta" href="javascript:void(0)" onclick="loadDoc('pages/signup.md')">Get API Access</a>
-    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn"></button>
   </nav>
 </header>
 
@@ -193,6 +194,9 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
 <nav class="sidebar" id="sidebar">
   <div class="sb-search"><input type="text" placeholder="Search docs..." oninput="filterNav(this.value)"></div>
   <div id="nav-tree"></div>
+  <div class="sb-footer">
+    <button class="sb-theme-btn" onclick="toggleTheme()" id="theme-btn"></button>
+  </div>
 </nav>
 
 <!-- Content -->
@@ -200,8 +204,8 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
 
 <script>
 /* ── Theme ── */
-function getTheme(){return localStorage.getItem('as-theme')||'light'}
-function applyTheme(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('theme-btn').textContent=t==='dark'?'\u2600\uFE0F':'\u263D';localStorage.setItem('as-theme',t)}
+function getTheme(){return localStorage.getItem('as-theme')||'dark'}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);var btn=document.getElementById('theme-btn');if(btn)btn.textContent=t==='dark'?'\u2600\uFE0F  Light Mode':'\u263D  Dark Mode';localStorage.setItem('as-theme',t)}
 function toggleTheme(){applyTheme(getTheme()==='dark'?'light':'dark')}
 applyTheme(getTheme());
 
@@ -209,7 +213,8 @@ applyTheme(getTheme());
 var GUIDES=[
 {s:'Getting Started',items:[
 {t:'Welcome',p:'pages/welcome.md'},{t:'Get API Access',p:'pages/signup.md'},{t:'Quick Start Guide',p:'pages/quickstart.md'},
-{t:'Environments & Base URL',p:'pages/environments.md'},{t:'Authentication',p:'pages/authentication.md'},{t:'API Overview',p:'pages/api-overview.md'}
+{t:'Environments & Base URL',p:'pages/environments.md'},{t:'Authentication',p:'pages/authentication.md'},{t:'API Overview',p:'pages/api-overview.md'},
+{t:'Contact Us',p:'pages/contact.md'}
 ]},
 {s:'Guides',items:[
 {t:'Code Samples',p:'pages/code-samples.md'},{t:'Placing Orders',p:'pages/place-order.md'},{t:'Streaming Data',p:'pages/streaming-data.md'},
@@ -219,7 +224,7 @@ var GUIDES=[
 {s:'SDKs & Tools',items:[
 {t:'SDKs & Libraries',p:'pages/sdks.md'},{t:'User Guide',p:'pages/user-guide.md'},{t:'Web Terminal',p:'pages/web-terminal.md'}
 ]},
-{s:'Resources',items:[{t:'Changelog',p:'pages/changelog.md'},{t:'Contact Us',p:'pages/contact.md'}]}
+{s:'Resources',items:[{t:'Changelog',p:'pages/changelog.md'}]}
 ];
 
 var spec=null,apiTags=[],currentView='',expandedTags={};
