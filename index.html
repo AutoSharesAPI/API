@@ -132,6 +132,31 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
   .sb-toggle{display:flex;align-items:center;gap:8px}
   .content{margin-left:0;margin-top:64px;padding:24px 16px}
 }
+/* ── AI Helper ── */
+.ai-fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;background:var(--ac);color:#fff;border:0;border-radius:50%;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,201,167,.35);z-index:200;transition:transform .15s,box-shadow .15s}
+.ai-fab:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(0,201,167,.45)}
+.ai-panel{position:fixed;bottom:88px;right:24px;width:380px;max-height:520px;background:var(--bg);border:1px solid var(--b1);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:200;display:none;flex-direction:column;overflow:hidden}
+[data-theme="dark"] .ai-panel{box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.ai-panel.open{display:flex}
+.ai-head{padding:14px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:var(--bg1)}
+.ai-head h3{font-size:14px;font-weight:700;color:var(--t1)}
+.ai-head span{font-size:11px;color:var(--t4)}
+.ai-close{background:none;border:0;color:var(--t4);cursor:pointer;font-size:18px;padding:4px}
+.ai-close:hover{color:var(--t1)}
+.ai-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:200px}
+.ai-msg{font-size:13px;line-height:1.6;padding:10px 14px;border-radius:10px;max-width:90%}
+.ai-msg.bot{background:var(--bg2);color:var(--t2);align-self:flex-start}
+.ai-msg.user{background:var(--ac-dim);color:var(--t1);align-self:flex-end;border:1px solid var(--ac);border-color:rgba(0,201,167,.2)}
+.ai-msg code{font-size:11px;background:var(--code-bg);padding:1px 4px;border-radius:3px}
+.ai-msg a{color:var(--ac)}
+.ai-input-wrap{padding:12px;border-top:1px solid var(--b1);display:flex;gap:8px}
+.ai-input{flex:1;padding:10px 14px;border:1px solid var(--b1);border-radius:10px;background:var(--bg);color:var(--t1);font-size:13px;font-family:inherit;resize:none}
+.ai-input:focus{border-color:var(--ac);outline:none}
+.ai-input::placeholder{color:var(--t5)}
+.ai-send{padding:8px 16px;background:var(--ac);color:#fff;border:0;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+.ai-send:hover{background:var(--ac-hover)}
+.ai-send:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:480px){.ai-panel{width:calc(100vw - 32px);right:16px;bottom:80px}}
 </style>
 </head>
 <body>
@@ -140,7 +165,7 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
 <header class="header">
   <div class="hdr-brand"><h1><span>AutoShares</span> Docs</h1></div>
   <nav class="hdr-nav">
-    <a class="hdr-link" href="https://autoshares.com" target="_blank">AutoShares.com</a>
+    <a class="hdr-link" href="https://autoshares.com" target="_blank">AutoShares Brokerage</a>
     <a class="hdr-link" href="https://autoshares.com/contact" target="_blank">Contact</a>
     <a class="hdr-cta" href="https://demo.autoshares.com" target="_blank">Get API Access</a>
     <button class="theme-btn" onclick="toggleTheme()" id="theme-btn"></button>
@@ -332,6 +357,103 @@ function copyCode(btn){var p=btn.parentElement;navigator.clipboard.writeText(p.t
 var FOOTER='<div class="footer">&copy; 2026 AutoShares Fintech Solutions, LLC. All rights reserved. AutoShares APIs are provided through AutoShares Fintech Solutions, LLC. Securities offered through Tradepro Securities, Inc., a FINRA/SIPC member broker-dealer. Trading involves risk including the possible loss of principal. Options trading involves substantial risk and is not suitable for all investors. Past performance is not indicative of future results. This site is for informational purposes only and does not constitute an offer to sell or a solicitation to buy any security.</div>';
 
 window.addEventListener('hashchange',function(){var h=location.hash.slice(1);if(h.startsWith('api:'))showApiTag(h.slice(4));else if(h)loadDoc(h)});
+
+/* ── AI Helper ── */
+var aiOpen=false;
+function toggleAI(){aiOpen=!aiOpen;document.getElementById('ai-panel').classList.toggle('open',aiOpen);if(aiOpen)document.getElementById('ai-input').focus()}
+
+var aiIndex=null;
+function buildAIIndex(){
+  if(!spec)return;
+  var idx=[];
+  // Index all endpoints
+  for(var p in spec.paths){for(var m in spec.paths[p]){
+    var op=spec.paths[p][m];
+    idx.push({type:'endpoint',method:m.toUpperCase(),path:p,summary:op.summary||'',description:op.description||'',tags:op.tags||[],
+      params:(op.parameters||[]).map(function(pm){return pm.name+' ('+pm.in+'): '+(pm.description||'')}).join('; ')});
+  }}
+  // Index guide pages
+  GUIDES.forEach(function(sec){sec.items.forEach(function(i){idx.push({type:'page',title:i.t,path:i.p,section:sec.s})})});
+  aiIndex=idx;
+}
+
+function askAI(){
+  var input=document.getElementById('ai-input');
+  var q=input.value.trim();if(!q)return;
+  input.value='';
+  var msgs=document.getElementById('ai-messages');
+  msgs.innerHTML+='<div class="ai-msg user">'+esc(q)+'</div>';
+  if(!aiIndex)buildAIIndex();
+  var answer=searchAI(q);
+  msgs.innerHTML+='<div class="ai-msg bot">'+answer+'</div>';
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function searchAI(query){
+  var q=query.toLowerCase();
+  var results=[];
+  // Search endpoints
+  aiIndex.forEach(function(item){
+    var score=0;
+    if(item.type==='endpoint'){
+      var text=(item.method+' '+item.path+' '+item.summary+' '+item.description+' '+item.tags.join(' ')+' '+item.params).toLowerCase();
+      q.split(/\s+/).forEach(function(w){if(text.indexOf(w)>=0)score+=10;if(item.path.toLowerCase().indexOf(w)>=0)score+=20;if(item.summary.toLowerCase().indexOf(w)>=0)score+=15});
+    } else {
+      var text=(item.title+' '+item.section).toLowerCase();
+      q.split(/\s+/).forEach(function(w){if(text.indexOf(w)>=0)score+=10});
+    }
+    if(score>0)results.push({item:item,score:score});
+  });
+  results.sort(function(a,b){return b.score-a.score});
+  if(!results.length)return'I couldn\'t find anything matching "<strong>'+esc(query)+'</strong>". Try searching for an endpoint name, HTTP method, or topic like "orders", "positions", "authentication", or "streaming".';
+  var html='Here\'s what I found for "<strong>'+esc(query)+'</strong>":<br><br>';
+  var shown=0;
+  results.slice(0,6).forEach(function(r){
+    var i=r.item;
+    if(i.type==='endpoint'){
+      html+='<span class="ep-badge ep-'+i.method.toLowerCase()+'" style="display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-right:4px">'+i.method+'</span>';
+      html+='<code>'+esc(i.path)+'</code><br>';
+      if(i.summary)html+='<span style="color:var(--t3);font-size:12px">'+esc(i.summary)+'</span><br>';
+      html+='<a href="javascript:void(0)" onclick="showApiTag(\''+i.tags[0]+'\');toggleAI()" style="font-size:11px">View in '+i.tags[0]+' &rarr;</a><br><br>';
+    } else {
+      html+='<strong>'+esc(i.title)+'</strong> <span style="color:var(--t4);font-size:11px">('+i.section+')</span><br>';
+      html+='<a href="javascript:void(0)" onclick="loadDoc(\''+i.path+'\');toggleAI()" style="font-size:11px">Read guide &rarr;</a><br><br>';
+    }
+    shown++;
+  });
+  if(results.length>6)html+='<span style="color:var(--t4);font-size:11px">...and '+(results.length-6)+' more results</span>';
+
+  // Add contextual tips
+  if(q.indexOf('order')>=0)html+='<br><br><strong>Tip:</strong> Check the <a href="javascript:void(0)" onclick="loadDoc(\'pages/place-order.md\');toggleAI()">Placing Orders guide</a> for OTOCO bracket examples.';
+  if(q.indexOf('auth')>=0||q.indexOf('token')>=0||q.indexOf('login')>=0)html+='<br><br><strong>Tip:</strong> See <a href="javascript:void(0)" onclick="loadDoc(\'pages/authentication.md\');toggleAI()">Authentication</a> for the full token flow including 2FA.';
+  if(q.indexOf('stream')>=0||q.indexOf('websocket')>=0||q.indexOf('quote')>=0||q.indexOf('real-time')>=0||q.indexOf('realtime')>=0)html+='<br><br><strong>Tip:</strong> Real-time quotes require <a href="javascript:void(0)" onclick="loadDoc(\'pages/streaming-data.md\');toggleAI()">market data agreements</a> in production.';
+  if(q.indexOf('error')>=0||q.indexOf('401')>=0||q.indexOf('429')>=0)html+='<br><br><strong>Tip:</strong> See <a href="javascript:void(0)" onclick="loadDoc(\'pages/error-codes.md\');toggleAI()">Error Codes</a> for troubleshooting.';
+  if(q.indexOf('sdk')>=0||q.indexOf('python')>=0||q.indexOf('javascript')>=0)html+='<br><br><strong>Tip:</strong> Check <a href="javascript:void(0)" onclick="loadDoc(\'pages/sdks.md\');toggleAI()">SDKs & Libraries</a> for ready-made clients.';
+  return html;
+}
+
+function aiKeydown(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();askAI()}}
 </script>
+
+<!-- AI Helper -->
+<button class="ai-fab" onclick="toggleAI()" title="Ask AI about this API">&#9883;</button>
+<div class="ai-panel" id="ai-panel">
+  <div class="ai-head">
+    <div><h3>API Assistant</h3><span>Search endpoints, guides, and examples</span></div>
+    <button class="ai-close" onclick="toggleAI()">&times;</button>
+  </div>
+  <div class="ai-messages" id="ai-messages">
+    <div class="ai-msg bot">Hi! I can help you find API endpoints, guides, and code examples. Try asking:<br><br>
+    &bull; "How do I place an order?"<br>
+    &bull; "Show me authentication endpoints"<br>
+    &bull; "What streaming data is available?"<br>
+    &bull; "Find position endpoints"<br>
+    &bull; "How do I handle errors?"</div>
+  </div>
+  <div class="ai-input-wrap">
+    <input class="ai-input" id="ai-input" placeholder="Ask about the API..." onkeydown="aiKeydown(event)">
+    <button class="ai-send" onclick="askAI()">Ask</button>
+  </div>
+</div>
 </body>
 </html>

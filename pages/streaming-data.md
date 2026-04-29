@@ -4,6 +4,37 @@
 
 AutoShares provides real-time streaming data via WebSocket connections. Use streaming for live quotes, order updates, position changes, watchlist updates, and account balance changes instead of polling REST endpoints.
 
+## Market Data Agreements (Required for Production)
+
+Before accessing real-time streaming quotes in the production environment, users must sign the required market data agreements. These are exchange-mandated subscriber agreements that authorize receipt of real-time market data.
+
+**Required agreements may include:**
+
+- **NYSE Market Data Agreement** — required for NYSE-listed securities
+- **NASDAQ Market Data Agreement** — required for NASDAQ-listed securities  
+- **OPRA Subscriber Agreement** — required for real-time options data
+- **UTP Plan Agreement** — required for consolidated tape data
+
+**How to check and sign agreements:**
+
+Use the Agreements API to retrieve outstanding agreements for a user:
+
+```
+GET /v1.0/users/@me/agreements
+```
+
+This returns a list of agreements that must be signed. Each agreement must be accepted before the user can receive the corresponding market data feed.
+
+**Sandbox vs Production:**
+
+| Environment | Market Data | Agreement Required |
+|-------------|------------|-------------------|
+| Sandbox | 15-minute delayed | No |
+| Production (unsigned) | 15-minute delayed | — |
+| Production (signed) | Real-time | Yes |
+
+Users who have not signed the required agreements will receive delayed data (typically 15 minutes) even in the production environment. Contact your AutoShares representative if you need assistance with market data entitlements.
+
 ## Connection Setup
 
 ### Step 1: Get Streamer Info
