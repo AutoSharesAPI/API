@@ -448,10 +448,171 @@ swagger-codegen generate \
   -o ./my-autoshares-sdk
 ```
 
+## Token Management
+
+AutoShares API tokens expire after **60 minutes** of inactivity. For a seamless user experience, implement automatic token refresh so users are never interrupted during a trading session.
+
+### Auto-Refresh (Python)
+
+```python
+import time
+import requests
+
+class AutoSharesSession:
+    """Manages token lifecycle — auto-refreshes before expiry."""
+
+    def __init__(self, base_url, app_key, username, password):
+        self.base_url = base_url
+        self.app_key = app_key
+        self.username = username
+        self.password = password
+        self.token = None
+        self.token_time = 0
+
+    def _ensure_token(self):
+        """Re-authenticate if token is older than 50 minutes."""
+        if self.token and (time.time() - self.token_time) < 3000:  # 50 min
+            return
+        r = requests.post(f"{self.base_url}/token", headers={
+            "Accept": "application/json",
+            "Et-App-Key": self.app_key,
+            "Username": self.username,
+            "Password": self.password,
+        })
+        r.raise_for_status()
+        data = r.json()
+        if data.get("State") != "Succeeded":
+            raise Exception(f"Auth failed: {data}")
+        self.token = data["Token"]
+        self.token_time = time.time()
+
+    def request(self, method, path, **kwargs):
+        """Make an API request with auto-refresh."""
+        self._ensure_token()
+        r = requests.request(method, f"{self.base_url}{path}",
+            headers={
+                "Authorization": f"Bearer {self.token}",
+                "Et-App-Key": self.app_key,
+                "Accept": "application/json",
+                **kwargs.pop("headers", {}),
+            }, **kwargs)
+        # If 401, token expired — refresh and retry once
+        if r.status_code == 401:
+            self.token = None
+            self._ensure_token()
+            r = requests.request(method, f"{self.base_url}{path}",
+                headers={
+                    "Authorization": f"Bearer {self.token}",
+                    "Et-App-Key": self.app_key,
+                    "Accept": "application/json",
+                }, **kwargs)
+        return r
+
+# Usage — token refreshes automatically, never expires during session
+session = AutoSharesSession(
+    base_url="https://api.autoshares.dev",
+    app_key=os.environ["APP_KEY"],
+    username=os.environ["USERNAME"],
+    password=os.environ["PASSWORD"],
+)
+
+# These calls auto-refresh the token if needed
+positions = session.request("GET", "/v1.0/accounts/123/positions").json()
+order = session.request("POST", "/v1.0/accounts/123/orders",
+    json={"Symbol": "AAPL", "Type": "Market", "Side": "Buy", "Quantity": 10}).json()
+```
+
+### Auto-Refresh (JavaScript)
+
+```javascript
+class AutoSharesSession {
+  constructor(baseUrl, appKey, username, password) {
+    this.baseUrl = baseUrl;
+    this.appKey = appKey;
+    this.username = username;
+    this.password = password;
+    this.token = null;
+    this.tokenTime = 0;
+  }
+
+  async ensureToken() {
+    if (this.token && (Date.now() - this.tokenTime) < 3000000) return; // 50 min
+    const res = await fetch(`${this.baseUrl}/token`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Et-App-Key": this.appKey,
+        Username: this.username,
+        Password: this.password,
+      },
+    });
+    const data = await res.json();
+    if (data.State !== "Succeeded") throw new Error(`Auth failed: ${data.Reason}`);
+    this.token = data.Token;
+    this.tokenTime = Date.now();
+  }
+
+  async request(method, path, body) {
+    await this.ensureToken();
+    const headers = {
+      Authorization: `Bearer ${this.token}`,
+      "Et-App-Key": this.appKey,
+      Accept: "application/json",
+    };
+    if (body) headers["Content-Type"] = "application/json";
+    let res = await fetch(`${this.baseUrl}${path}`, {
+      method, headers,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    // Auto-retry on 401
+    if (res.status === 401) {
+      this.token = null;
+      await this.ensureToken();
+      headers.Authorization = `Bearer ${this.token}`;
+      res = await fetch(`${this.baseUrl}${path}`, {
+        method, headers,
+        body: body ? JSON.stringify(body) : undefined,
+      });
+    }
+    return res.json();
+  }
+}
+
+// Usage — never worry about token expiry
+const session = new AutoSharesSession(
+  "https://api.autoshares.dev", APP_KEY, USERNAME, PASSWORD
+);
+const positions = await session.request("GET", "/v1.0/accounts/123/positions");
+```
+
+### Token Lifecycle
+
+| Event | What Happens |
+|-------|-------------|
+| **Login** | Token issued, valid 60 minutes |
+| **API call at 50 min** | Auto-refresh: new token issued silently |
+| **401 response** | Retry: re-authenticate + replay the request |
+| **Logout** | Token invalidated via `POST /logout` |
+| **Browser close** | Token in sessionStorage is cleared |
+| **Password change** | All tokens invalidated — re-auth required |
+
+### Best Practice: Session-Based UX
+
+Even though tokens expire in 60 minutes, users should **never see an expiry**. Your app should:
+
+1. **Proactive refresh** — re-authenticate at 50 minutes (before expiry)
+2. **Reactive retry** — catch 401, refresh, replay the failed request
+3. **Seamless to user** — no login prompts during active sessions
+4. **Explicit logout only** — user clicks "Sign Out" to end the session
+
+This gives a **session-based experience** (like Interactive Brokers) on top of token-based auth.
+
 ## Security Best Practices
 
 - **Never hardcode credentials** — use environment variables or a secrets manager
-- **Store tokens securely** — tokens expire after 60 minutes, don't persist them
+- **Use sessionStorage** — tokens cleared when tab closes, never persisted to disk
 - **Use HTTPS only** — all API endpoints require TLS
-- **Proxy in production** — route browser requests through your backend, never expose `Et-App-Key` client-side
+- **Proxy in production** — all browser requests go through `api.autoshares.dev`
 - **Rotate credentials** — change passwords periodically and rotate app keys if compromised
+- **Force re-auth** on sensitive actions (first withdrawal, password change)
+- **Invalidate all tokens** on password change
