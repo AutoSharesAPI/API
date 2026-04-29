@@ -493,9 +493,9 @@ function renderNav(q){
         html+=esc(label)+'</a>';
       });
       html+='</div>';
-    });
-    // Order Types dropdown inside API Reference
-    var orderTypes=[
+      // Insert Order Types right after Orders tag
+      if(t.name==='Orders'){
+        var orderTypes=[
       {t:'Market Order',p:'pages/orders/market.md'},
       {t:'Limit Order',p:'pages/orders/limit.md'},
       {t:'Stop Order',p:'pages/orders/stop.md'},
@@ -520,6 +520,8 @@ function renderNav(q){
       });
       html+='</div>';
     }
+      }
+    });
     html+='</div>';
   }
   // Back Office API link after API Reference
