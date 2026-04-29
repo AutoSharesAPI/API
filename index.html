@@ -358,24 +358,12 @@ var FOOTER='<div class="footer">&copy; 2026 AutoShares Fintech Solutions, LLC. A
 
 window.addEventListener('hashchange',function(){var h=location.hash.slice(1);if(h.startsWith('api:'))showApiTag(h.slice(4));else if(h)loadDoc(h)});
 
-/* ── AI Helper ── */
+/* ── AI Assistant (Claude-powered) ── */
+var AI_URL='https://ai-docs.autoshares.workers.dev'; // Cloudflare Worker proxy
 var aiOpen=false;
-function toggleAI(){aiOpen=!aiOpen;document.getElementById('ai-panel').classList.toggle('open',aiOpen);if(aiOpen)document.getElementById('ai-input').focus()}
+var aiHistory=[];
 
-var aiIndex=null;
-function buildAIIndex(){
-  if(!spec)return;
-  var idx=[];
-  // Index all endpoints
-  for(var p in spec.paths){for(var m in spec.paths[p]){
-    var op=spec.paths[p][m];
-    idx.push({type:'endpoint',method:m.toUpperCase(),path:p,summary:op.summary||'',description:op.description||'',tags:op.tags||[],
-      params:(op.parameters||[]).map(function(pm){return pm.name+' ('+pm.in+'): '+(pm.description||'')}).join('; ')});
-  }}
-  // Index guide pages
-  GUIDES.forEach(function(sec){sec.items.forEach(function(i){idx.push({type:'page',title:i.t,path:i.p,section:sec.s})})});
-  aiIndex=idx;
-}
+function toggleAI(){aiOpen=!aiOpen;document.getElementById('ai-panel').classList.toggle('open',aiOpen);if(aiOpen)document.getElementById('ai-input').focus()}
 
 function askAI(){
   var input=document.getElementById('ai-input');
@@ -383,53 +371,39 @@ function askAI(){
   input.value='';
   var msgs=document.getElementById('ai-messages');
   msgs.innerHTML+='<div class="ai-msg user">'+esc(q)+'</div>';
-  if(!aiIndex)buildAIIndex();
-  var answer=searchAI(q);
-  msgs.innerHTML+='<div class="ai-msg bot">'+answer+'</div>';
-  msgs.scrollTop=msgs.scrollHeight;
+  var thinking=document.createElement('div');thinking.className='ai-msg bot';thinking.id='ai-thinking';thinking.innerHTML='<em style="color:var(--t4)">Thinking...</em>';
+  msgs.appendChild(thinking);msgs.scrollTop=msgs.scrollHeight;
+  document.getElementById('ai-send').disabled=true;
+
+  aiHistory.push({role:'user',content:q});
+  // Keep last 6 messages for context
+  var sendMessages=aiHistory.slice(-6);
+
+  fetch(AI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:sendMessages})})
+  .then(function(r){return r.json()})
+  .then(function(data){
+    var reply=(data.content&&data.content[0]?data.content[0].text:null)||(data.error?data.error.message:'Sorry, I couldn\'t process that request. Make sure the AI worker is deployed.');
+    aiHistory.push({role:'assistant',content:reply});
+    var el=document.getElementById('ai-thinking');
+    if(el)el.innerHTML=renderMd(reply);
+    msgs.scrollTop=msgs.scrollHeight;
+  })
+  .catch(function(err){
+    var el=document.getElementById('ai-thinking');
+    if(el)el.innerHTML='<span style="color:var(--ep-del)">Connection error.</span> The AI assistant requires the Cloudflare Worker to be deployed. See <code>worker.js</code> in the repo for setup instructions.';
+    msgs.scrollTop=msgs.scrollHeight;
+  })
+  .finally(function(){document.getElementById('ai-send').disabled=false;document.getElementById('ai-input').focus()});
 }
 
-function searchAI(query){
-  var q=query.toLowerCase();
-  var results=[];
-  // Search endpoints
-  aiIndex.forEach(function(item){
-    var score=0;
-    if(item.type==='endpoint'){
-      var text=(item.method+' '+item.path+' '+item.summary+' '+item.description+' '+item.tags.join(' ')+' '+item.params).toLowerCase();
-      q.split(/\s+/).forEach(function(w){if(text.indexOf(w)>=0)score+=10;if(item.path.toLowerCase().indexOf(w)>=0)score+=20;if(item.summary.toLowerCase().indexOf(w)>=0)score+=15});
-    } else {
-      var text=(item.title+' '+item.section).toLowerCase();
-      q.split(/\s+/).forEach(function(w){if(text.indexOf(w)>=0)score+=10});
-    }
-    if(score>0)results.push({item:item,score:score});
-  });
-  results.sort(function(a,b){return b.score-a.score});
-  if(!results.length)return'I couldn\'t find anything matching "<strong>'+esc(query)+'</strong>". Try searching for an endpoint name, HTTP method, or topic like "orders", "positions", "authentication", or "streaming".';
-  var html='Here\'s what I found for "<strong>'+esc(query)+'</strong>":<br><br>';
-  var shown=0;
-  results.slice(0,6).forEach(function(r){
-    var i=r.item;
-    if(i.type==='endpoint'){
-      html+='<span class="ep-badge ep-'+i.method.toLowerCase()+'" style="display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-right:4px">'+i.method+'</span>';
-      html+='<code>'+esc(i.path)+'</code><br>';
-      if(i.summary)html+='<span style="color:var(--t3);font-size:12px">'+esc(i.summary)+'</span><br>';
-      html+='<a href="javascript:void(0)" onclick="showApiTag(\''+i.tags[0]+'\');toggleAI()" style="font-size:11px">View in '+i.tags[0]+' &rarr;</a><br><br>';
-    } else {
-      html+='<strong>'+esc(i.title)+'</strong> <span style="color:var(--t4);font-size:11px">('+i.section+')</span><br>';
-      html+='<a href="javascript:void(0)" onclick="loadDoc(\''+i.path+'\');toggleAI()" style="font-size:11px">Read guide &rarr;</a><br><br>';
-    }
-    shown++;
-  });
-  if(results.length>6)html+='<span style="color:var(--t4);font-size:11px">...and '+(results.length-6)+' more results</span>';
-
-  // Add contextual tips
-  if(q.indexOf('order')>=0)html+='<br><br><strong>Tip:</strong> Check the <a href="javascript:void(0)" onclick="loadDoc(\'pages/place-order.md\');toggleAI()">Placing Orders guide</a> for OTOCO bracket examples.';
-  if(q.indexOf('auth')>=0||q.indexOf('token')>=0||q.indexOf('login')>=0)html+='<br><br><strong>Tip:</strong> See <a href="javascript:void(0)" onclick="loadDoc(\'pages/authentication.md\');toggleAI()">Authentication</a> for the full token flow including 2FA.';
-  if(q.indexOf('stream')>=0||q.indexOf('websocket')>=0||q.indexOf('quote')>=0||q.indexOf('real-time')>=0||q.indexOf('realtime')>=0)html+='<br><br><strong>Tip:</strong> Real-time quotes require <a href="javascript:void(0)" onclick="loadDoc(\'pages/streaming-data.md\');toggleAI()">market data agreements</a> in production.';
-  if(q.indexOf('error')>=0||q.indexOf('401')>=0||q.indexOf('429')>=0)html+='<br><br><strong>Tip:</strong> See <a href="javascript:void(0)" onclick="loadDoc(\'pages/error-codes.md\');toggleAI()">Error Codes</a> for troubleshooting.';
-  if(q.indexOf('sdk')>=0||q.indexOf('python')>=0||q.indexOf('javascript')>=0)html+='<br><br><strong>Tip:</strong> Check <a href="javascript:void(0)" onclick="loadDoc(\'pages/sdks.md\');toggleAI()">SDKs & Libraries</a> for ready-made clients.';
-  return html;
+function renderMd(text){
+  // Simple markdown: **bold**, `code`, ```blocks```, newlines
+  text=esc(text);
+  text=text.replace(/```(\w*)\n([\s\S]*?)```/g,'<pre style="margin:8px 0;padding:8px 10px;background:var(--code-bg);border:1px solid var(--code-border);border-radius:6px;font-size:11px;overflow-x:auto"><code>$2</code></pre>');
+  text=text.replace(/`([^`]+)`/g,'<code style="font-size:11px;padding:1px 4px;background:var(--code-bg);border-radius:3px">$1</code>');
+  text=text.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  text=text.replace(/\n/g,'<br>');
+  return text;
 }
 
 function aiKeydown(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();askAI()}}
@@ -443,16 +417,16 @@ function aiKeydown(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();askAI(
     <button class="ai-close" onclick="toggleAI()">&times;</button>
   </div>
   <div class="ai-messages" id="ai-messages">
-    <div class="ai-msg bot">Hi! I can help you find API endpoints, guides, and code examples. Try asking:<br><br>
-    &bull; "How do I place an order?"<br>
-    &bull; "Show me authentication endpoints"<br>
-    &bull; "What streaming data is available?"<br>
-    &bull; "Find position endpoints"<br>
-    &bull; "How do I handle errors?"</div>
+    <div class="ai-msg bot">Hi! I'm powered by Claude AI and know the entire AutoShares Trading API. Ask me anything:<br><br>
+    &bull; "How do I place an OTOCO bracket order?"<br>
+    &bull; "Show me how to authenticate with 2FA"<br>
+    &bull; "Write a Python script to get my positions"<br>
+    &bull; "What's the difference between Price and Last in streaming?"<br>
+    &bull; "How do I set up ACH via Plaid?"</div>
   </div>
   <div class="ai-input-wrap">
     <input class="ai-input" id="ai-input" placeholder="Ask about the API..." onkeydown="aiKeydown(event)">
-    <button class="ai-send" onclick="askAI()">Ask</button>
+    <button class="ai-send" id="ai-send" onclick="askAI()">Ask</button>
   </div>
 </div>
 </body>
