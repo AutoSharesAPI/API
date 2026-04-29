@@ -264,7 +264,7 @@ pre:hover .copy-btn,.code-panel:hover .copy-btn{opacity:1}
 
 <!-- Header -->
 <header class="header">
-  <div class="hdr-brand"><h1><span>AutoShares</span> API</h1></div>
+  <div class="hdr-brand"><h1><span>AutoShares</span> API Documentation</h1></div>
   <div class="hdr-search">
     <svg class="hdr-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input type="text" placeholder="Search docs, endpoints, guides..." oninput="headerSearch(this.value)" onkeydown="if(event.key==='Escape')this.value=''" id="hdr-search-input">
@@ -489,7 +489,7 @@ function renderNav(q){
   html+='<div class="sb-section"><div class="sb-section-title">Back Office API</div>';
   html+='<a class="sb-link" data-id="bo-overview" onclick="loadDoc(\'pages/clearing-overview.md\')">Overview</a>';
   html+='<a class="sb-link" href="https://backoffice.autoshares.dev" target="_blank" style="display:flex;align-items:center;gap:6px">API Reference <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>';
-  html+='<a class="sb-link" onclick="loadDoc(\'pages/signup.md\')">Request Access</a>';
+  html+='<a class="sb-link" onclick="loadDoc(\'pages/backoffice-access.md\')">Request Access</a>';
   html+='</div>';
 
   // Resources section after API Reference
@@ -537,6 +537,9 @@ function loadDoc(path){
     // Inject contact form if placeholder exists
     var contactEl=doc.querySelector('#contact-form-container');
     if(contactEl)injectContactForm(contactEl);
+    // Inject back office signup form
+    var boEl=doc.querySelector('#bo-signup-container');
+    if(boEl)injectBOForm(boEl);
     window.scrollTo(0,0);
   }).catch(function(){doc.innerHTML='<p style="color:var(--t4)">Page not found.</p>'});
   history.replaceState(null,'','#'+path);
@@ -828,6 +831,71 @@ function buildPrevNext(currentPath){
   html+='</div>';
   return html;
 }
+
+/* ── Back Office Signup Form ── */
+function injectBOForm(el){
+  var s='width:100%;padding:10px 14px;border:1px solid var(--b1);border-radius:8px;background:var(--bg1);color:var(--t1);font-size:14px;font-family:inherit';
+  var l='display:block;font-size:12px;font-weight:600;color:var(--t4);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px';
+  var f='<form id="bo-access-form" onsubmit="return handleBOAccess(event)" style="display:flex;flex-direction:column;gap:14px;max-width:560px;margin:16px 0 24px">';
+  f+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+  f+='<div><label style="'+l+'">First Name *</label><input id="bo-first" required style="'+s+'" placeholder="Jane"></div>';
+  f+='<div><label style="'+l+'">Last Name *</label><input id="bo-last" required style="'+s+'" placeholder="Smith"></div></div>';
+  f+='<div><label style="'+l+'">Email *</label><input id="bo-email" type="email" required style="'+s+'" placeholder="jane@brokerage.com"></div>';
+  f+='<div><label style="'+l+'">Company / Organization *</label><input id="bo-company" required style="'+s+'" placeholder="Acme Brokerage Services"></div>';
+  f+='<div><label style="'+l+'">Role / Title *</label><input id="bo-role" required style="'+s+'" placeholder="CTO, Head of Operations, etc."></div>';
+  f+='<div><label style="'+l+'">Organization Type *</label><select id="bo-orgtype" required style="'+s+';cursor:pointer"><option value="">Select...</option><option value="broker-dealer">Broker-Dealer</option><option value="ria">RIA / Wealth Management</option><option value="fintech">Fintech Platform</option><option value="clearing">Clearing Firm</option><option value="custodian">Custodian</option><option value="other">Other</option></select></div>';
+  f+='<div><label style="'+l+'">Use Case *</label><select id="bo-usecase" required style="'+s+';cursor:pointer"><option value="">Select...</option><option value="account-onboarding">Account Onboarding / KYC</option><option value="clearing-integration">Clearing Integration</option><option value="cashiering">ACH / Wire / Cashiering</option><option value="reporting">Reporting & Statements</option><option value="risk-margin">Risk & Margin Monitoring</option><option value="acats">ACATS Transfers</option><option value="trading">Order Routing & Execution</option><option value="full-backoffice">Full Back Office Automation</option><option value="other">Other</option></select></div>';
+  f+='<div><label style="'+l+'">Public IP Addresses * <span style="font-size:10px;color:var(--t5);text-transform:none">(for API allowlisting — comma separated)</span></label><input id="bo-ips" required style="'+s+'" placeholder="e.g. 203.0.113.50, 198.51.100.25"></div>';
+  f+='<div><label style="'+l+'">Expected Account Volume</label><select id="bo-volume" style="'+s+';cursor:pointer"><option value="1-10">1 - 10 accounts</option><option value="10-100">10 - 100 accounts</option><option value="100-1000">100 - 1,000 accounts</option><option value="1000+">1,000+ accounts</option></select></div>';
+  f+='<div><label style="'+l+'">CRD Number <span style="font-size:10px;color:var(--t5);text-transform:none">(if broker-dealer)</span></label><input id="bo-crd" style="'+s+'" placeholder="e.g. 123456"></div>';
+  f+='<div><label style="'+l+'">Additional Details</label><textarea id="bo-details" rows="4" style="'+s+';resize:vertical" placeholder="Describe your integration needs, timeline, or questions..."></textarea></div>';
+  f+='<div style="padding:10px 14px;background:var(--bg2);border-radius:8px;border:1px solid var(--b1)"><label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--t3);cursor:pointer;line-height:1.5"><input type="checkbox" id="bo-terms" required style="margin-top:3px"> I understand that Back Office API access requires approval, a signed API agreement, and IP allowlisting. I agree to the AutoShares Terms of Service.</label></div>';
+  f+='<button type="submit" id="bo-submit" style="padding:12px 24px;background:var(--ac);color:#fff;border:0;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;align-self:flex-start">Submit Access Request</button>';
+  f+='<div id="bo-status" style="display:none;padding:14px 18px;border-radius:10px;font-size:13px;line-height:1.6"></div>';
+  f+='</form>';
+  el.innerHTML=f;
+}
+
+window.handleBOAccess=function(e){
+  e.preventDefault();
+  var btn=document.getElementById('bo-submit');
+  var status=document.getElementById('bo-status');
+  btn.disabled=true;btn.textContent='Submitting...';
+  status.style.display='none';
+  var data={
+    first:document.getElementById('bo-first').value.trim(),
+    last:document.getElementById('bo-last').value.trim(),
+    email:document.getElementById('bo-email').value.trim(),
+    company:document.getElementById('bo-company').value.trim(),
+    usecase:'Back Office: '+document.getElementById('bo-usecase').value,
+    apis:['Back Office'],
+    volume:document.getElementById('bo-volume').value,
+    message:'Organization: '+document.getElementById('bo-orgtype').value+
+      '\nRole: '+document.getElementById('bo-role').value+
+      '\nIPs: '+document.getElementById('bo-ips').value+
+      '\nCRD: '+(document.getElementById('bo-crd').value||'N/A')+
+      '\nAccount Volume: '+document.getElementById('bo-volume').value+
+      '\nDetails: '+(document.getElementById('bo-details').value||'N/A')
+  };
+  fetch('https://ai-docs.globalmarketholdings.workers.dev/lead',{
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)
+  }).then(function(){
+    status.style.display='block';
+    status.style.background='var(--ac-dim)';
+    status.style.border='1px solid var(--ac)';
+    status.style.color='var(--t1)';
+    status.innerHTML='<strong>Request submitted!</strong><br><br>Our team will review your application and respond to <strong>'+esc(data.email)+'</strong> within 1-2 business days.<br><br>Next steps:<br>1. We\'ll send the API agreement for review and signature<br>2. Your IP addresses will be added to the allowlist<br>3. Credentials will be provisioned within 24 hours of signing';
+    btn.textContent='Submitted';
+  }).catch(function(){
+    status.style.display='block';
+    status.style.background='var(--bg2)';
+    status.style.border='1px solid var(--b1)';
+    status.style.color='var(--t1)';
+    status.innerHTML='Please email your request to <a href="mailto:support@autoshares.com" style="color:var(--ac);font-weight:600">support@autoshares.com</a>';
+    btn.textContent='Submit Access Request';btn.disabled=false;
+  });
+  return false;
+};
 
 /* ── API Overview Cards ── */
 function injectOverviewCards(el){
