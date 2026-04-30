@@ -7,7 +7,7 @@ AutoShares provides a hosted MCP (Model Context Protocol) server that gives AI a
 Connect to our hosted MCP server — no installation required:
 
 ```
-https://ai-docs.globalmarketholdings.workers.dev/mcp
+https://mcp.autoshares.dev/mcp
 ```
 
 ### 12 Tools Available
@@ -36,7 +36,7 @@ Add to your project's `.mcp.json`:
   "mcpServers": {
     "autoshares": {
       "type": "url",
-      "url": "https://ai-docs.globalmarketholdings.workers.dev/mcp"
+      "url": "https://mcp.autoshares.dev/mcp"
     }
   }
 }
@@ -58,7 +58,7 @@ In Claude Desktop settings, add a custom MCP server:
   "mcpServers": {
     "autoshares": {
       "type": "url",
-      "url": "https://ai-docs.globalmarketholdings.workers.dev/mcp"
+      "url": "https://mcp.autoshares.dev/mcp"
     }
   }
 }

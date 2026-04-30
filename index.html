@@ -917,7 +917,7 @@ window.handleBOAccess=function(e){
       '\nAccount Volume: '+document.getElementById('bo-volume').value+
       '\nDetails: '+(document.getElementById('bo-details').value||'N/A')
   };
-  fetch('https://ai-docs.globalmarketholdings.workers.dev/lead',{
+  fetch('https://mcp.autoshares.dev/lead',{
     method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)
   }).then(function(){
     status.style.display='block';
@@ -1064,7 +1064,7 @@ window.handleContact=function(e){
   btn.disabled=true;btn.textContent='Sending...';
   status.style.display='none';
 
-  fetch('https://ai-docs.globalmarketholdings.workers.dev/lead',{
+  fetch('https://mcp.autoshares.dev/lead',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({first:first,last:last,email:email,company:company,usecase:'Contact: '+topic,apis:[],volume:'',message:message})
   }).then(function(){
@@ -1112,7 +1112,7 @@ window.handleSignup=function(e){
   status.style.display='none';
 
   // Send lead notification (fire and forget)
-  fetch('https://ai-docs.globalmarketholdings.workers.dev/lead',{
+  fetch('https://mcp.autoshares.dev/lead',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({first:first,last:last,email:email,company:company,usecase:usecase,apis:apis,volume:volume})
   }).catch(function(){});
@@ -1164,7 +1164,7 @@ window.handleSignup=function(e){
 };
 
 /* ── AI Assistant (Claude-powered) ── */
-var AI_URL='https://ai-docs.globalmarketholdings.workers.dev'; // Cloudflare Worker proxy
+var AI_URL='https://mcp.autoshares.dev'; // Cloudflare Worker proxy
 var aiOpen=false;
 var aiHistory=[];
 
